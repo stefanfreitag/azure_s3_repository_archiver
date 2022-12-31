@@ -50,3 +50,6 @@ junit.xml
 .jsii
 tsconfig.json
 !/API.md
+.history/
+.venv
+.idea
