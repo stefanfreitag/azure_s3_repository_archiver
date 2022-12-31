@@ -6,17 +6,27 @@
 
 Allows to backup regularly git repositories hosted in Azure DevOps to an S3 Bucket.
 
+
+
+## Features
+
+The S3 bucket is configured as below
+
+- enabled versioning of objects
+- enabled encryption using an S3 managed Key
+- disallowing publich access
+- A lifecycle configuration for the archived repositories. They transistion
+  through different storage classes
+  - Infrequent Access after 30 days
+  - Glacier after 90 days
+  - Deep Archive 180 days
+  - Expiry after 365 days
+
 ## Planned Features
 
 - Logging to CloudWatch
   - Encryption using customer-managed KMS key
 - Notifications to SNS about uploaded objects
-- S3 bucket encryption and versioning
-- Lifecycle configuration for the archived repositories. Will move in S3 to
-  - Infrequent Access after 30 days
-  - Glacier after 60 days
-  - Deep Archive 90 days
-  - Expiry after 180 days
 - Tagging of created AWS resources
 
 ## Prerequisites
