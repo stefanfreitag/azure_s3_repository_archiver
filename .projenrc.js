@@ -1,15 +1,29 @@
 const { awscdk } = require('projen');
+const { Stability } = require('projen/lib/cdk');
+const { UpgradeDependenciesSchedule } = require('projen/lib/javascript');
+
 const project = new awscdk.AwsCdkConstructLibrary({
   author: 'Stefan Freitag',
-  authorAddress: 'stefan.freitag@rwe.com',
-  cdkVersion: '2.1.0',
+  authorAddress: 'stefan.freitag@udo.edu',
+  authorOrganization: false,
+  catalog: {
+    twitter: 'stefanfreitag',
+    announce: false,
+  },
+  cdkVersion: '2.58.1',
   defaultReleaseBranch: 'main',
-  name: 'azure_s3_repository_archiver',
-  repositoryUrl: 'https://github.com/stefan.freitag/azure_s3_repository_archiver.git',
-
-  // deps: [],                /* Runtime dependencies of this module. */
-  // description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
-  // devDeps: [],             /* Build dependencies for this module. */
-  // packageName: undefined,  /* The "name" in package.json. */
+  keywords: ['aws', 'azure-devops', 'cdk', 'backup', 's3'],
+  name: 'azure-devops-repository-archiver',
+  repositoryUrl: 'https://github.com/stefanfreitag/azure_s3_repository_archiver.git',
+  stability: Stability.EXPERIMENTAL,
+  publishToPypi: {
+    module: 'azure_devops_repository_archiver',
+    distName: 'azure-devops-repository-archiver',
+  },
 });
+
+const common_exclude = ['.history/', '.venv', '.idea'];
+project.npmignore.exclude(...common_exclude);
+project.gitignore.exclude(...common_exclude);
+
 project.synth();
