@@ -124,6 +124,94 @@ import { ArchiverProperties } from 'azure-devops-repository-archiver'
 const archiverProperties: ArchiverProperties = { ... }
 ```
 
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#azure-devops-repository-archiver.ArchiverProperties.property.backupConfigurations">backupConfigurations</a></code> | <code><a href="#azure-devops-repository-archiver.BackupConfiguration">BackupConfiguration</a>[]</code> | Contains details on the git repositories to be backed up. |
+
+---
+
+##### `backupConfigurations`<sup>Required</sup> <a name="backupConfigurations" id="azure-devops-repository-archiver.ArchiverProperties.property.backupConfigurations"></a>
+
+```typescript
+public readonly backupConfigurations: BackupConfiguration[];
+```
+
+- *Type:* <a href="#azure-devops-repository-archiver.BackupConfiguration">BackupConfiguration</a>[]
+
+Contains details on the git repositories to be backed up.
+
+---
+
+### BackupConfiguration <a name="BackupConfiguration" id="azure-devops-repository-archiver.BackupConfiguration"></a>
+
+#### Initializer <a name="Initializer" id="azure-devops-repository-archiver.BackupConfiguration.Initializer"></a>
+
+```typescript
+import { BackupConfiguration } from 'azure-devops-repository-archiver'
+
+const backupConfiguration: BackupConfiguration = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#azure-devops-repository-archiver.BackupConfiguration.property.organizationName">organizationName</a></code> | <code>string</code> | The name of the Azure DevOps organization. |
+| <code><a href="#azure-devops-repository-archiver.BackupConfiguration.property.projectName">projectName</a></code> | <code>string</code> | The name of the Azure DevOps project. |
+| <code><a href="#azure-devops-repository-archiver.BackupConfiguration.property.repositoryNames">repositoryNames</a></code> | <code>string[]</code> | The names of the git repositories to backup. |
+| <code><a href="#azure-devops-repository-archiver.BackupConfiguration.property.secretArn">secretArn</a></code> | <code>string</code> | ARN of the secret containing the token for accessing the git repositories of the Azure DevOps organization. |
+
+---
+
+##### `organizationName`<sup>Required</sup> <a name="organizationName" id="azure-devops-repository-archiver.BackupConfiguration.property.organizationName"></a>
+
+```typescript
+public readonly organizationName: string;
+```
+
+- *Type:* string
+
+The name of the Azure DevOps organization.
+
+---
+
+##### `projectName`<sup>Required</sup> <a name="projectName" id="azure-devops-repository-archiver.BackupConfiguration.property.projectName"></a>
+
+```typescript
+public readonly projectName: string;
+```
+
+- *Type:* string
+
+The name of the Azure DevOps project.
+
+---
+
+##### `repositoryNames`<sup>Required</sup> <a name="repositoryNames" id="azure-devops-repository-archiver.BackupConfiguration.property.repositoryNames"></a>
+
+```typescript
+public readonly repositoryNames: string[];
+```
+
+- *Type:* string[]
+
+The names of the git repositories to backup.
+
+---
+
+##### `secretArn`<sup>Required</sup> <a name="secretArn" id="azure-devops-repository-archiver.BackupConfiguration.property.secretArn"></a>
+
+```typescript
+public readonly secretArn: string;
+```
+
+- *Type:* string
+
+ARN of the secret containing the token for accessing the git repositories of the Azure DevOps organization.
+
+---
 
 
 

@@ -11,7 +11,9 @@ const project = new awscdk.AwsCdkConstructLibrary({
     announce: false,
   },
   cdkVersion: '2.58.1',
+  codeCov: true,
   defaultReleaseBranch: 'main',
+  devContainer: true,
   keywords: ['aws', 'azure-devops', 'cdk', 'backup', 's3'],
   name: 'azure-devops-repository-archiver',
   repositoryUrl: 'https://github.com/stefanfreitag/azure_s3_repository_archiver.git',
@@ -21,6 +23,8 @@ const project = new awscdk.AwsCdkConstructLibrary({
     distName: 'azure-devops-repository-archiver',
   },
 });
+
+project.devContainer.addVscodeExtensions('esbenp.prettier-vscode', 'dbaeumer.vscode-eslint');
 
 const common_exclude = ['.history/', '.venv', '.idea'];
 project.npmignore.exclude(...common_exclude);

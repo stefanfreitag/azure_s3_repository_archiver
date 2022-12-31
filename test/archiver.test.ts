@@ -5,7 +5,9 @@ import { Archiver } from '../src/archiver';
 describe('S3 Bucket settings', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'stack', {});
-  new Archiver(stack, 'archiver', {});
+  new Archiver(stack, 'archiver', {
+    backupConfigurations: [],
+  });
   const template = assertions.Template.fromStack(stack);
 
   test('Exactly one S3 bucket is created', () => {
@@ -51,7 +53,9 @@ describe('S3 Bucket settings', () => {
 describe('SNS settings', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'stack', {});
-  new Archiver(stack, 'archiver', {});
+  new Archiver(stack, 'archiver', {
+    backupConfigurations: [],
+  });
   const template = assertions.Template.fromStack(stack);
 
   test('SNS topic count', () => {
@@ -61,6 +65,42 @@ describe('SNS settings', () => {
   test('SNS Topic display name', () => {
     template.hasResourceProperties('AWS::SNS::Topic', {
       DisplayName: 'archiver-notifications',
+    });
+  });
+});
+
+describe('CodeBuild settings', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'stack', {});
+  new Archiver(stack, 'archiver', {
+    backupConfigurations: [
+      {
+        organizationName: 'organization-a',
+        projectName: 'project-b',
+        repositoryNames: ['repository-c'],
+        secretArn: 'secret-arn',
+      },
+      {
+        organizationName: 'organization-a',
+        projectName: 'project-d',
+        repositoryNames: ['repository-c'],
+        secretArn: 'secret-arn',
+      },
+    ],
+  });
+
+  const template = assertions.Template.fromStack(stack);
+
+  test('Exact number of CodeBuild projects are setup ', () => {
+    template.resourceCountIs('AWS::CodeBuild::Project', 2);
+  });
+
+  test('Default CodeBuild configuration as expected ', () => {
+    template.hasResourceProperties('AWS::CodeBuild::Project', {
+      Environment: {
+        Image: 'aws/codebuild/standard:6.0',
+      },
+      TimeoutInMinutes: 300,
     });
   });
 });
