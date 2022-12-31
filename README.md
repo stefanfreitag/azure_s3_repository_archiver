@@ -1,5 +1,8 @@
 # Azure DevOps Git Repository Archiver
 
+[![npm version](https://badge.fury.io/js/azure-devops-repository-archiver.svg)](https://badge.fury.io/js/azure-devops-repository-archiver)
+![Release](https://github.com/stefanfreitag/azure_s3_repository_archiver/workflows/release/badge.svg)
+
 Allows to backup regularly git repositories hosted in Azure DevOps to an S3 Bucket.
 
 ## Planned Features

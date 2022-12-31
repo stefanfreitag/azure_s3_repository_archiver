@@ -1,5 +1,5 @@
 {
-  "name": "azure_s3_repository_archiver",
+  "name": "azure-devops-repository-archiver",
   "repository": {
     "type": "git",
     "url": "https://github.com/stefanfreitag/azure_s3_repository_archiver.git"
@@ -17,6 +17,7 @@
     "package": "npx projen package",
     "package-all": "npx projen package-all",
     "package:js": "npx projen package:js",
+    "package:python": "npx projen package:python",
     "post-compile": "npx projen post-compile",
     "post-upgrade": "npx projen post-upgrade",
     "pre-compile": "npx projen pre-compile",
@@ -115,11 +116,20 @@
   "stability": "experimental",
   "jsii": {
     "outdir": "dist",
-    "targets": {},
+    "targets": {
+      "python": {
+        "distName": "azure-devops-repository-archiver",
+        "module": "azure_devops_repository_archiver"
+      }
+    },
     "tsc": {
       "outDir": "lib",
       "rootDir": "src"
     }
+  },
+  "awscdkio": {
+    "twitter": "stefanfreitag",
+    "announce": false
   },
   "resolutions": {
     "@types/prettier": "2.6.0",
