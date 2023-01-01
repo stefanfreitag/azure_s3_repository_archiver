@@ -85,6 +85,7 @@ Any object.
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#azure-devops-repository-archiver.Archiver.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+| <code><a href="#azure-devops-repository-archiver.Archiver.property.logGroup">logGroup</a></code> | <code>aws-cdk-lib.aws_logs.LogGroup</code> | Log group used by the CodeBuild projects. |
 | <code><a href="#azure-devops-repository-archiver.Archiver.property.props">props</a></code> | <code><a href="#azure-devops-repository-archiver.ArchiverProperties">ArchiverProperties</a></code> | *No description.* |
 
 ---
@@ -98,6 +99,18 @@ public readonly node: Node;
 - *Type:* constructs.Node
 
 The tree node.
+
+---
+
+##### `logGroup`<sup>Required</sup> <a name="logGroup" id="azure-devops-repository-archiver.Archiver.property.logGroup"></a>
+
+```typescript
+public readonly logGroup: LogGroup;
+```
+
+- *Type:* aws-cdk-lib.aws_logs.LogGroup
+
+Log group used by the CodeBuild projects.
 
 ---
 
