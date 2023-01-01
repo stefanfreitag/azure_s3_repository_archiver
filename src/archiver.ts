@@ -1,7 +1,10 @@
 import * as cdk from 'aws-cdk-lib/';
 import { RemovalPolicy } from 'aws-cdk-lib/';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
-
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as logs from 'aws-cdk-lib/aws-logs';
+import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as snsNotifications from 'aws-cdk-lib/aws-s3-notifications';
 import * as sns from 'aws-cdk-lib/aws-sns';
@@ -12,10 +15,20 @@ import { BackupConfiguration } from './backupConfiguration';
 
 export class Archiver extends Construct {
   props: ArchiverProperties;
+
+  /**
+   * Log group used by the CodeBuild projects.
+   *
+   * @type {LogGroup}
+   * @memberof Archiver
+   */
+  logGroup: LogGroup;
+
   constructor(scope: Construct, id: string, props: ArchiverProperties) {
     super(scope, id);
     this.props = props;
 
+    this.logGroup = this.createLogGroup();
     const topic = new sns.Topic(this, 'notifications', {
       displayName: 'archiver-notifications',
     });
@@ -25,8 +38,17 @@ export class Archiver extends Construct {
       s3.EventType.OBJECT_CREATED,
       new snsNotifications.SnsDestination(topic),
     );
-
     this.createProjects(bucket);
+  }
+
+  private createLogGroup() {
+    const key = this.createLogGroupKey();
+    const loggroup = new logs.LogGroup(this, 'loggroup', {
+      encryptionKey: key,
+      retention: RetentionDays.ONE_WEEK,
+    });
+    loggroup.node.addDependency(key);
+    return loggroup;
   }
 
   /**
@@ -66,6 +88,23 @@ export class Archiver extends Construct {
     });
   }
 
+  private createLogGroupKey() {
+    const key = new kms.Key(this, 'loggroupKey', {
+      description: 'Repository Archiver',
+      enableKeyRotation: true,
+      pendingWindow: cdk.Duration.days(7),
+      keyUsage: kms.KeyUsage.ENCRYPT_DECRYPT,
+      keySpec: kms.KeySpec.SYMMETRIC_DEFAULT,
+      alias: 'archiver-loggroup-key',
+    });
+    key.grantEncryptDecrypt(
+      new iam.ServicePrincipal(
+        `logs.${cdk.Stack.of(this).region}.amazonaws.com`,
+      ),
+    );
+    return key;
+  }
+
   /**
    * Creates for each backup configuration a separate CodeBuild project
    *
@@ -90,16 +129,17 @@ export class Archiver extends Construct {
    * @return {*}
    * @memberof Archiver
    */
-  private createProject(element: BackupConfiguration, bucket: cdk.aws_s3.Bucket) {
+  private createProject(
+    element: BackupConfiguration,
+    bucket: cdk.aws_s3.Bucket,
+  ) {
     return new codebuild.Project(
       this,
-      'archiver-' +
-      element.organizationName +
-      '-' +
-      element.projectName,
+      'archiver-' + element.organizationName + '-' + element.projectName,
       {
         timeout: cdk.Duration.hours(5),
-        projectName: 'AzureDevOpsGitBackup' +
+        projectName:
+          'AzureDevOpsGitBackup' +
           '-' +
           element.organizationName +
           '-' +
@@ -118,6 +158,12 @@ export class Archiver extends Construct {
           },
           buildImage: codebuild.LinuxBuildImage.STANDARD_6_0,
         },
+        logging: {
+          cloudWatch: {
+            enabled: true,
+            logGroup: this.logGroup,
+          },
+        },
         buildSpec: codebuild.BuildSpec.fromObject({
           version: 0.2,
           batch: {
@@ -132,8 +178,8 @@ export class Archiver extends Construct {
                 'git clone --mirror "https://${TOKEN}@dev.azure.com/${ORGANIZATION}/${PROJECT}/_git/${REPOSITORY}"',
                 'tar czf ${REPOSITORY}.tgz ./${REPOSITORY}.git',
                 'aws s3 cp ./${REPOSITORY}.tgz ' +
-                bucket.s3UrlForObject() +
-                '/${ORGANIZATION}/${PROJECT}/${REPOSITORY}.tgz',
+                  bucket.s3UrlForObject() +
+                  '/${ORGANIZATION}/${PROJECT}/${REPOSITORY}.tgz',
               ],
             },
           },

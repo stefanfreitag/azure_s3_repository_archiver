@@ -6,8 +6,6 @@
 
 Allows to backup regularly git repositories hosted in Azure DevOps to an S3 Bucket.
 
-
-
 ## Features
 
 The S3 bucket is configured as below
@@ -22,10 +20,13 @@ The S3 bucket is configured as below
   - Deep Archive 180 days
   - Expiry after 365 days
 
-## Planned Features
+The CodeBuild projects are configured as below
 
 - Logging to CloudWatch
   - Encryption using customer-managed KMS key
+
+## Planned Features
+
 - Notifications to SNS about uploaded objects
 - Tagging of created AWS resources
 

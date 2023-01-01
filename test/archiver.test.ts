@@ -104,3 +104,35 @@ describe('CodeBuild settings', () => {
     });
   });
 });
+
+describe('Logging settings', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'stack', {});
+  new Archiver(stack, 'archiver', {
+    backupConfigurations: [
+      {
+        organizationName: 'organization-a',
+        projectName: 'project-b',
+        repositoryNames: ['repository-c'],
+        secretArn: 'secret-arn',
+      },
+      {
+        organizationName: 'organization-a',
+        projectName: 'project-d',
+        repositoryNames: ['repository-c'],
+        secretArn: 'secret-arn',
+      },
+    ],
+  });
+  const template = assertions.Template.fromStack(stack);
+
+  test('Exactly one Log Group is created', () => {
+    template.resourceCountIs('AWS::Logs::LogGroup', 1);
+  });
+
+  test('Log Group retention', () => {
+    template.hasResourceProperties('AWS::Logs::LogGroup', {
+      RetentionInDays: 7,
+    });
+  });
+});
