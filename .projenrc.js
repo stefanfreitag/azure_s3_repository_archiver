@@ -1,4 +1,4 @@
-const { awscdk } = require('projen');
+const { awscdk, DevEnvironmentDockerImage } = require('projen');
 const { Stability } = require('projen/lib/cdk');
 const { UpgradeDependenciesSchedule } = require('projen/lib/javascript');
 
@@ -24,6 +24,8 @@ const project = new awscdk.AwsCdkConstructLibrary({
   },
 });
 
+project.devContainer.name='cdk-dev-environment';
+project.devContainer.addDockerImage(DevEnvironmentDockerImage.fromFile('.gitpod.Dockerfile'));
 project.devContainer.addVscodeExtensions('esbenp.prettier-vscode', 'dbaeumer.vscode-eslint');
 
 const common_exclude = ['.history/', '.venv', '.idea'];

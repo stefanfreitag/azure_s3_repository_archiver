@@ -24,30 +24,66 @@ export class Archiver extends Construct {
    */
   logGroup: LogGroup;
 
+  /**
+   *The KMS key used to encrypt the logs.
+   *
+   * @type {kms.Key}
+   * @memberof Archiver
+   */
+  logGroupKmsKey: kms.Key;
+
+  /**
+   *The S3 bucket used to store the git repositories archive.
+   *
+   * @type {s3.Bucket}
+   * @memberof Archiver
+   */
+  bucket: s3.Bucket;
+
   constructor(scope: Construct, id: string, props: ArchiverProperties) {
     super(scope, id);
     this.props = props;
 
+    this.logGroupKmsKey = this.createLogGroupKey();
     this.logGroup = this.createLogGroup();
     const topic = new sns.Topic(this, 'notifications', {
       displayName: 'archiver-notifications',
     });
 
-    const bucket = this.createArchiveBucket();
-    bucket.addEventNotification(
+    this.bucket = this.createArchiveBucket();
+    this.bucket.addEventNotification(
       s3.EventType.OBJECT_CREATED,
       new snsNotifications.SnsDestination(topic),
     );
-    this.createProjects(bucket);
+    this.createProjects();
+
+    new cdk.CfnOutput(this, 's3-bucket-arn', {
+      description: 'ARN of the S3 bucket storing the repositories.',
+      value: this.bucket.bucketArn,
+    });
+
+    new cdk.CfnOutput(this, 'log-group-arn', {
+      description: 'ARN of the Cloudwatch Log group storing the code build logs.',
+      value: this.logGroup.logGroupArn,
+    });
+
+    new cdk.CfnOutput(this, 'log-group-key', {
+      description: 'ARN of the KMS key used to encrypt the Cloudwatch logs.',
+      value: this.logGroupKmsKey.keyArn,
+    });
+
+    new cdk.CfnOutput(this, 'sns-topic-arn', {
+      description: 'ARN of the SNS topic.',
+      value: topic.topicArn,
+    });
   }
 
   private createLogGroup() {
-    const key = this.createLogGroupKey();
     const loggroup = new logs.LogGroup(this, 'loggroup', {
-      encryptionKey: key,
+      encryptionKey: this.logGroupKmsKey,
       retention: RetentionDays.ONE_WEEK,
     });
-    loggroup.node.addDependency(key);
+    loggroup.node.addDependency(this.logGroupKmsKey);
     return loggroup;
   }
 
@@ -106,32 +142,29 @@ export class Archiver extends Construct {
   }
 
   /**
-   * Creates for each backup configuration a separate CodeBuild project
+   * Creates for each backup configuration a separate CodeBuild project.
    *
    * @private
-   * @param {s3.Bucket} bucket
    * @memberof Archiver
    */
-  private createProjects(bucket: s3.Bucket) {
+  private createProjects() {
     this.props.backupConfigurations.forEach((element) => {
-      const project = this.createProject(element, bucket);
+      const project = this.createProject(element);
       project.enableBatchBuilds();
-      bucket.grantReadWrite(project);
+      this.bucket.grantReadWrite(project);
     });
   }
 
   /**
-   * Create a CodeBuild project
+   * Create a CodeBuild project.
    *
    * @private
    * @param {BackupConfiguration} element
-   * @param {cdk.aws_s3.Bucket} bucket
    * @return {*}
    * @memberof Archiver
    */
   private createProject(
     element: BackupConfiguration,
-    bucket: cdk.aws_s3.Bucket,
   ) {
     return new codebuild.Project(
       this,
@@ -178,7 +211,7 @@ export class Archiver extends Construct {
                 'git clone --mirror "https://${TOKEN}@dev.azure.com/${ORGANIZATION}/${PROJECT}/_git/${REPOSITORY}"',
                 'tar czf ${REPOSITORY}.tgz ./${REPOSITORY}.git',
                 'aws s3 cp ./${REPOSITORY}.tgz ' +
-                  bucket.s3UrlForObject() +
+                  this.bucket.s3UrlForObject() +
                   '/${ORGANIZATION}/${PROJECT}/${REPOSITORY}.tgz',
               ],
             },
