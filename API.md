@@ -85,7 +85,9 @@ Any object.
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#azure-devops-repository-archiver.Archiver.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+| <code><a href="#azure-devops-repository-archiver.Archiver.property.bucket">bucket</a></code> | <code>aws-cdk-lib.aws_s3.Bucket</code> | The S3 bucket used to store the git repositories archive. |
 | <code><a href="#azure-devops-repository-archiver.Archiver.property.logGroup">logGroup</a></code> | <code>aws-cdk-lib.aws_logs.LogGroup</code> | Log group used by the CodeBuild projects. |
+| <code><a href="#azure-devops-repository-archiver.Archiver.property.logGroupKmsKey">logGroupKmsKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | The KMS key used to encrypt the logs. |
 | <code><a href="#azure-devops-repository-archiver.Archiver.property.props">props</a></code> | <code><a href="#azure-devops-repository-archiver.ArchiverProperties">ArchiverProperties</a></code> | *No description.* |
 
 ---
@@ -102,6 +104,18 @@ The tree node.
 
 ---
 
+##### `bucket`<sup>Required</sup> <a name="bucket" id="azure-devops-repository-archiver.Archiver.property.bucket"></a>
+
+```typescript
+public readonly bucket: Bucket;
+```
+
+- *Type:* aws-cdk-lib.aws_s3.Bucket
+
+The S3 bucket used to store the git repositories archive.
+
+---
+
 ##### `logGroup`<sup>Required</sup> <a name="logGroup" id="azure-devops-repository-archiver.Archiver.property.logGroup"></a>
 
 ```typescript
@@ -111,6 +125,18 @@ public readonly logGroup: LogGroup;
 - *Type:* aws-cdk-lib.aws_logs.LogGroup
 
 Log group used by the CodeBuild projects.
+
+---
+
+##### `logGroupKmsKey`<sup>Required</sup> <a name="logGroupKmsKey" id="azure-devops-repository-archiver.Archiver.property.logGroupKmsKey"></a>
+
+```typescript
+public readonly logGroupKmsKey: Key;
+```
+
+- *Type:* aws-cdk-lib.aws_kms.Key
+
+The KMS key used to encrypt the logs.
 
 ---
 
@@ -142,6 +168,7 @@ const archiverProperties: ArchiverProperties = { ... }
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#azure-devops-repository-archiver.ArchiverProperties.property.backupConfigurations">backupConfigurations</a></code> | <code><a href="#azure-devops-repository-archiver.BackupConfiguration">BackupConfiguration</a>[]</code> | Contains details on the git repositories to be backed up. |
+| <code><a href="#azure-devops-repository-archiver.ArchiverProperties.property.retentionDays">retentionDays</a></code> | <code>aws-cdk-lib.aws_logs.RetentionDays</code> | Number of days to keep the Cloudwatch logs. |
 
 ---
 
@@ -154,6 +181,19 @@ public readonly backupConfigurations: BackupConfiguration[];
 - *Type:* <a href="#azure-devops-repository-archiver.BackupConfiguration">BackupConfiguration</a>[]
 
 Contains details on the git repositories to be backed up.
+
+---
+
+##### `retentionDays`<sup>Optional</sup> <a name="retentionDays" id="azure-devops-repository-archiver.ArchiverProperties.property.retentionDays"></a>
+
+```typescript
+public readonly retentionDays: RetentionDays;
+```
+
+- *Type:* aws-cdk-lib.aws_logs.RetentionDays
+- *Default:* RetentionDays.ONE_MONTH
+
+Number of days to keep the Cloudwatch logs.
 
 ---
 

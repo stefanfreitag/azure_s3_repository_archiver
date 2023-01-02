@@ -1,4 +1,7 @@
 {
+  "build": {
+    "dockerfile": ".gitpod.Dockerfile"
+  },
   "extensions": [
     "esbenp.prettier-vscode",
     "dbaeumer.vscode-eslint"

@@ -23,6 +23,7 @@ The S3 bucket is configured as below
 The CodeBuild projects are configured as below
 
 - Logging to CloudWatch
+  - Configurable retention period. Default is one month.
   - Encryption using customer-managed KMS key
 
 ## Planned Features
@@ -39,6 +40,8 @@ The PAT needs to have "Code read" permission and stored in a SecretsManager secr
 ```shell
 aws secretsmanager create-secret --name rwest_archiver_rwest_platform --description "RWEST Archiver for RWEST-Platform organization" --secret-string "{\"pat\":\"<your_pat>\"}"
 ```
+
+## Example
 
 ## Links
 
