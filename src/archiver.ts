@@ -4,7 +4,6 @@ import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as logs from 'aws-cdk-lib/aws-logs';
-import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as snsNotifications from 'aws-cdk-lib/aws-s3-notifications';
 import * as sns from 'aws-cdk-lib/aws-sns';
@@ -12,6 +11,7 @@ import { Construct } from 'constructs';
 
 import { ArchiverProperties } from './archiverProperties';
 import { BackupConfiguration } from './backupConfiguration';
+
 
 export class Archiver extends Construct {
   props: ArchiverProperties;
@@ -22,7 +22,7 @@ export class Archiver extends Construct {
    * @type {LogGroup}
    * @memberof Archiver
    */
-  logGroup: LogGroup;
+  logGroup: logs.LogGroup;
 
   /**
    *The KMS key used to encrypt the logs.
@@ -81,7 +81,7 @@ export class Archiver extends Construct {
   private createLogGroup() {
     const loggroup = new logs.LogGroup(this, 'loggroup', {
       encryptionKey: this.logGroupKmsKey,
-      retention: RetentionDays.ONE_WEEK,
+      retention: this.props.retentionDays ? this.props.retentionDays : logs.RetentionDays.ONE_MONTH,
     });
     loggroup.node.addDependency(this.logGroupKmsKey);
     return loggroup;

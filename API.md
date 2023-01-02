@@ -168,6 +168,7 @@ const archiverProperties: ArchiverProperties = { ... }
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#azure-devops-repository-archiver.ArchiverProperties.property.backupConfigurations">backupConfigurations</a></code> | <code><a href="#azure-devops-repository-archiver.BackupConfiguration">BackupConfiguration</a>[]</code> | Contains details on the git repositories to be backed up. |
+| <code><a href="#azure-devops-repository-archiver.ArchiverProperties.property.retentionDays">retentionDays</a></code> | <code>aws-cdk-lib.aws_logs.RetentionDays</code> | Number of days to keep the Cloudwatch logs. |
 
 ---
 
@@ -180,6 +181,19 @@ public readonly backupConfigurations: BackupConfiguration[];
 - *Type:* <a href="#azure-devops-repository-archiver.BackupConfiguration">BackupConfiguration</a>[]
 
 Contains details on the git repositories to be backed up.
+
+---
+
+##### `retentionDays`<sup>Optional</sup> <a name="retentionDays" id="azure-devops-repository-archiver.ArchiverProperties.property.retentionDays"></a>
+
+```typescript
+public readonly retentionDays: RetentionDays;
+```
+
+- *Type:* aws-cdk-lib.aws_logs.RetentionDays
+- *Default:* RetentionDays.ONE_MONTH
+
+Number of days to keep the Cloudwatch logs.
 
 ---
 
