@@ -1,4 +1,4 @@
-import * as logs from 'aws-cdk-lib/aws-logs';
+import { aws_logs as logs } from 'aws-cdk-lib';
 import { BackupConfiguration } from './backupConfiguration';
 export interface ArchiverProperties {
   /**
