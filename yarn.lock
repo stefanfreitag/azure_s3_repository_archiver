@@ -3925,7 +3925,7 @@ jsii-diff@^1.72.0:
     log4js "^6.7.1"
     yargs "^16.2.0"
 
-jsii-docgen@^7.0.191:
+jsii-docgen@^7.0.192:
   version "7.0.192"
   resolved "https://registry.yarnpkg.com/jsii-docgen/-/jsii-docgen-7.0.192.tgz#ef9596389fc5a4e183d33659326a4163d6509297"
   integrity sha512-/6vu7rspCEqefFAyMYsVBsf73ekgSfuQyzZmhnVim0GfIH0ZQeoApRJ/z1QAuWEGGzVpkhOe/8WNSjcJ7LFyVw==
@@ -5062,7 +5062,7 @@ progress@^2.0.3:
   resolved "https://registry.yarnpkg.com/progress/-/progress-2.0.3.tgz#7e8cf8d8f5b8f239c1bc68beb4eb78567d572ef8"
   integrity sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==
 
-projen@^0.65.78:
+projen@^0.65.79:
   version "0.65.79"
   resolved "https://registry.yarnpkg.com/projen/-/projen-0.65.79.tgz#597b3570e16ae9d33c2dbc144688cc1341043fca"
   integrity sha512-MSnSYmDWP+A4SfRb4j5+ssTnfsrwzXOCKaR6XvsutF8NyilQgmDPZ/0YA5UT594hU4Ei1O3vNy+/yXRWX7h6qg==
