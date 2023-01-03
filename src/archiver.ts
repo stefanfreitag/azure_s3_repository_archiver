@@ -1,17 +1,21 @@
-import * as cdk from 'aws-cdk-lib/';
-import { RemovalPolicy } from 'aws-cdk-lib/';
-import * as codebuild from 'aws-cdk-lib/aws-codebuild';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as kms from 'aws-cdk-lib/aws-kms';
-import * as logs from 'aws-cdk-lib/aws-logs';
-import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as snsNotifications from 'aws-cdk-lib/aws-s3-notifications';
-import * as sns from 'aws-cdk-lib/aws-sns';
+import {
+  CfnOutput,
+  Duration,
+  RemovalPolicy,
+  Stack,
+  aws_codebuild as codebuild,
+  aws_iam as iam,
+  aws_kms as kms,
+  aws_logs as logs,
+  aws_sns as sns,
+  aws_s3_notifications as s3Notifications,
+  aws_s3 as s3,
+} from 'aws-cdk-lib';
+
 import { Construct } from 'constructs';
 
 import { ArchiverProperties } from './archiverProperties';
 import { BackupConfiguration } from './backupConfiguration';
-
 
 export class Archiver extends Construct {
   props: ArchiverProperties;
@@ -53,26 +57,27 @@ export class Archiver extends Construct {
     this.bucket = this.createArchiveBucket();
     this.bucket.addEventNotification(
       s3.EventType.OBJECT_CREATED,
-      new snsNotifications.SnsDestination(topic),
+      new s3Notifications.SnsDestination(topic),
     );
     this.createProjects();
 
-    new cdk.CfnOutput(this, 's3-bucket-arn', {
+    new CfnOutput(this, 's3-bucket-arn', {
       description: 'ARN of the S3 bucket storing the repositories.',
       value: this.bucket.bucketArn,
     });
 
-    new cdk.CfnOutput(this, 'log-group-arn', {
-      description: 'ARN of the Cloudwatch Log group storing the code build logs.',
+    new CfnOutput(this, 'log-group-arn', {
+      description:
+        'ARN of the Cloudwatch Log group storing the code build logs.',
       value: this.logGroup.logGroupArn,
     });
 
-    new cdk.CfnOutput(this, 'log-group-key', {
+    new CfnOutput(this, 'log-group-key', {
       description: 'ARN of the KMS key used to encrypt the Cloudwatch logs.',
       value: this.logGroupKmsKey.keyArn,
     });
 
-    new cdk.CfnOutput(this, 'sns-topic-arn', {
+    new CfnOutput(this, 'sns-topic-arn', {
       description: 'ARN of the SNS topic.',
       value: topic.topicArn,
     });
@@ -81,7 +86,9 @@ export class Archiver extends Construct {
   private createLogGroup() {
     const loggroup = new logs.LogGroup(this, 'loggroup', {
       encryptionKey: this.logGroupKmsKey,
-      retention: this.props.retentionDays ? this.props.retentionDays : logs.RetentionDays.ONE_MONTH,
+      retention: this.props.retentionDays
+        ? this.props.retentionDays
+        : logs.RetentionDays.ONE_MONTH,
     });
     loggroup.node.addDependency(this.logGroupKmsKey);
     return loggroup;
@@ -102,19 +109,19 @@ export class Archiver extends Construct {
       removalPolicy: RemovalPolicy.RETAIN,
       lifecycleRules: [
         {
-          expiration: cdk.Duration.days(360),
+          expiration: Duration.days(360),
           transitions: [
             {
               storageClass: s3.StorageClass.INFREQUENT_ACCESS,
-              transitionAfter: cdk.Duration.days(30),
+              transitionAfter: Duration.days(30),
             },
             {
               storageClass: s3.StorageClass.GLACIER,
-              transitionAfter: cdk.Duration.days(90),
+              transitionAfter: Duration.days(90),
             },
             {
               storageClass: s3.StorageClass.DEEP_ARCHIVE,
-              transitionAfter: cdk.Duration.days(180),
+              transitionAfter: Duration.days(180),
             },
           ],
         },
@@ -128,15 +135,13 @@ export class Archiver extends Construct {
     const key = new kms.Key(this, 'loggroupKey', {
       description: 'Repository Archiver',
       enableKeyRotation: true,
-      pendingWindow: cdk.Duration.days(7),
+      pendingWindow: Duration.days(7),
       keyUsage: kms.KeyUsage.ENCRYPT_DECRYPT,
       keySpec: kms.KeySpec.SYMMETRIC_DEFAULT,
       alias: 'archiver-loggroup-key',
     });
     key.grantEncryptDecrypt(
-      new iam.ServicePrincipal(
-        `logs.${cdk.Stack.of(this).region}.amazonaws.com`,
-      ),
+      new iam.ServicePrincipal(`logs.${Stack.of(this).region}.amazonaws.com`),
     );
     return key;
   }
@@ -163,14 +168,12 @@ export class Archiver extends Construct {
    * @return {*}
    * @memberof Archiver
    */
-  private createProject(
-    element: BackupConfiguration,
-  ) {
+  private createProject(element: BackupConfiguration) {
     return new codebuild.Project(
       this,
       'archiver-' + element.organizationName + '-' + element.projectName,
       {
-        timeout: cdk.Duration.hours(5),
+        timeout: Duration.hours(5),
         projectName:
           'AzureDevOpsGitBackup' +
           '-' +
