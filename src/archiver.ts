@@ -4,6 +4,8 @@ import {
   RemovalPolicy,
   Stack,
   aws_codebuild as codebuild,
+  aws_events as events,
+  aws_events_targets as eventsTargets,
   aws_iam as iam,
   aws_kms as kms,
   aws_logs as logs,
@@ -13,9 +15,13 @@ import {
 } from 'aws-cdk-lib';
 
 import { Construct } from 'constructs';
-
 import { ArchiverProperties } from './archiverProperties';
 import { BackupConfiguration } from './backupConfiguration';
+
+/**
+ * Every week
+ */
+const DEFAULT_CRON_EXPRESSION = 'cron(0 0 ? * 1 *)';
 
 export class Archiver extends Construct {
   props: ArchiverProperties;
@@ -44,31 +50,41 @@ export class Archiver extends Construct {
    */
   bucket: s3.Bucket;
 
+  /**
+   * SNS topic to send configured bucket events to.
+   *
+   * @type {sns.Topic}
+   * @memberof Archiver
+   */
+  topic: sns.Topic;
+
   constructor(scope: Construct, id: string, props: ArchiverProperties) {
     super(scope, id);
     this.props = props;
 
     this.logGroupKmsKey = this.createLogGroupKey();
     this.logGroup = this.createLogGroup();
-    const topic = new sns.Topic(this, 'notifications', {
+    this.topic = new sns.Topic(this, 'notifications', {
       displayName: 'archiver-notifications',
     });
 
     this.bucket = this.createArchiveBucket();
     this.bucket.addEventNotification(
       s3.EventType.OBJECT_CREATED,
-      new s3Notifications.SnsDestination(topic),
+      new s3Notifications.SnsDestination(this.topic),
     );
     this.createProjects();
+    this.createCfnOutputs();
+  }
 
+  private createCfnOutputs() {
     new CfnOutput(this, 's3-bucket-arn', {
       description: 'ARN of the S3 bucket storing the repositories.',
       value: this.bucket.bucketArn,
     });
 
     new CfnOutput(this, 'log-group-arn', {
-      description:
-        'ARN of the Cloudwatch Log group storing the code build logs.',
+      description: 'ARN of the Cloudwatch Log group storing the code build logs.',
       value: this.logGroup.logGroupArn,
     });
 
@@ -79,7 +95,7 @@ export class Archiver extends Construct {
 
     new CfnOutput(this, 'sns-topic-arn', {
       description: 'ARN of the SNS topic.',
-      value: topic.topicArn,
+      value: this.topic.topicArn,
     });
   }
 
@@ -157,6 +173,14 @@ export class Archiver extends Construct {
       const project = this.createProject(element);
       project.enableBatchBuilds();
       this.bucket.grantReadWrite(project);
+      new events.Rule(this, 'ScheduleRule-'+ element.organizationName + '-' + element.projectName, {
+        enabled: true,
+        schedule: events.Schedule.expression(DEFAULT_CRON_EXPRESSION),
+        targets: [new eventsTargets.CodeBuildProject(project)],
+        description: 'Trigger for Azure DevOps git repositories backup',
+      });
+      console.log(element);
+
     });
   }
 

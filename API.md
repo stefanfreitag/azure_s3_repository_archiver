@@ -89,6 +89,7 @@ Any object.
 | <code><a href="#azure-devops-repository-archiver.Archiver.property.logGroup">logGroup</a></code> | <code>aws-cdk-lib.aws_logs.LogGroup</code> | Log group used by the CodeBuild projects. |
 | <code><a href="#azure-devops-repository-archiver.Archiver.property.logGroupKmsKey">logGroupKmsKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | The KMS key used to encrypt the logs. |
 | <code><a href="#azure-devops-repository-archiver.Archiver.property.props">props</a></code> | <code><a href="#azure-devops-repository-archiver.ArchiverProperties">ArchiverProperties</a></code> | *No description.* |
+| <code><a href="#azure-devops-repository-archiver.Archiver.property.topic">topic</a></code> | <code>aws-cdk-lib.aws_sns.Topic</code> | SNS topic to send configured bucket events to. |
 
 ---
 
@@ -147,6 +148,18 @@ public readonly props: ArchiverProperties;
 ```
 
 - *Type:* <a href="#azure-devops-repository-archiver.ArchiverProperties">ArchiverProperties</a>
+
+---
+
+##### `topic`<sup>Required</sup> <a name="topic" id="azure-devops-repository-archiver.Archiver.property.topic"></a>
+
+```typescript
+public readonly topic: Topic;
+```
+
+- *Type:* aws-cdk-lib.aws_sns.Topic
+
+SNS topic to send configured bucket events to.
 
 ---
 
