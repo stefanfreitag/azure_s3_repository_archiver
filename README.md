@@ -25,10 +25,10 @@ The CodeBuild projects are configured as below
 - Logging to CloudWatch
   - Configurable retention period. Default is one month.
   - Encryption using customer-managed KMS key
+- Notifications to SNS about uploaded objects
 
 ## Planned Features
 
-- Notifications to SNS about uploaded objects
 - Tagging of created AWS resources
 
 ## Prerequisites
@@ -41,7 +41,62 @@ The PAT needs to have "Code read" permission and stored in a SecretsManager secr
 aws secretsmanager create-secret --name rwest_archiver_rwest_platform --description "RWEST Archiver for RWEST-Platform organization" --secret-string "{\"pat\":\"<your_pat>\"}"
 ```
 
-## Example
+## Example (Typescript)
+
+- Add the library to your dependencies, e.g to the `package.json` file
+
+  ```javascript
+  "dependencies": {
+    [...],
+    "azure-devops-repository-archiver": "0.0.9",
+  },
+  ```
+
+- Per `BackupConfiguration` a secret containing the Azure DevOps PAT needs to be
+  specified. It can e.g. be imported
+
+  ```typescript
+  const secret = Secret.fromSecretAttributes(this, 'azure-devops-pat', {
+    secretCompleteArn:
+      'arn:aws:secretsmanager:eu-central-1:<aws_account_id>:secret:<secret_name>',
+  });
+  ```
+
+- When creating the construct the required `BackupConfiguration`s can be passed
+  as below. The grouping is per organization and project.
+
+  ```typescript
+   const backupConfigurations: BackupConfiguration[] = [
+    {
+      organizationName: 'MyOrganization',
+      projectName: 'project-1',
+      repositoryNames: [
+        'repository-1-a',
+        'repository-1-b',
+      ],
+      secretArn: secret.secretArn,
+    },
+    {
+      organizationName: 'MyOrganization',
+      projectName: 'project-2',
+      repositoryNames: [
+        'repository-2-a',
+        'repository-2-b',
+      ],
+      secretArn: secret.secretArn,
+    },
+  ]
+  ```
+
+- The archiver properties and the archiver can then be created as
+
+  ```typescript
+  const archiverProps: ArchiverProperties = {
+    retention: RetentionDays.ONE_WEEK,
+    backupConfigurations: backupConfigurations,
+  };
+  new Archiver(this, 'archiver', archiverProps);
+  ```
 
 ## Links
 
