@@ -10,9 +10,14 @@ const project = new awscdk.AwsCdkConstructLibrary({
     twitter: 'stefanfreitag',
     announce: false,
   },
-  cdkVersion: '2.58.1',
+  cdkVersion: '2.59.0',
   codeCov: true,
   defaultReleaseBranch: 'main',
+  depsUpgradeOptions: {
+    workflowOptions: {
+      schedule: UpgradeDependenciesSchedule.WEEKLY,
+    },
+  },
   devContainer: true,
   keywords: ['aws', 'azure-devops', 'cdk', 'backup', 's3'],
   name: 'azure-devops-repository-archiver',
