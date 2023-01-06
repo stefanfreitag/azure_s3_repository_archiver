@@ -23,6 +23,11 @@ const project = new awscdk.AwsCdkConstructLibrary({
   name: 'azure-devops-repository-archiver',
   repositoryUrl: 'https://github.com/stefanfreitag/azure_s3_repository_archiver.git',
   stability: Stability.EXPERIMENTAL,
+  publishToMaven: {
+    javaPackage: 'io.github.stefanfreitag.cdk.azures3repositoryarchiver',
+    mavenArtifactId: 'azureS3RepositoryArchiver',
+    mavenGroupId: 'io.github.stefanfreitag',
+  },
   publishToPypi: {
     module: 'azure_devops_repository_archiver',
     distName: 'azure-devops-repository-archiver',
