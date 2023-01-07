@@ -167,3 +167,44 @@ describe('Logging settings', () => {
     });
   });
 });
+
+describe('Cloudwatch rules', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'stack', {});
+  const backupConfigurations = [
+    {
+      organizationName: 'organization-a',
+      projectName: 'project-b',
+      repositoryNames: ['repository-c'],
+      secretArn: 'secret-arn',
+    },
+    {
+      organizationName: 'organization-a',
+      projectName: 'project-d',
+      repositoryNames: ['repository-c'],
+      secretArn: 'secret-arn',
+    },
+  ];
+  new Archiver(stack, 'archiver', {
+    retentionDays: logs.RetentionDays.ONE_WEEK,
+    backupConfigurations,
+  });
+
+  test('Expected number of rules created', () => {
+    const template = assertions.Template.fromStack(stack);
+    template.resourceCountIs('AWS::Events::Rule', 2);
+  });
+  test('Description of rules', () => {
+    const template = assertions.Template.fromStack(stack);
+    backupConfigurations.forEach((configuration) => {
+      template.hasResourceProperties('AWS::Events::Rule', {
+        Description:
+          'Trigger for backing up Azure DevOps git repositories of organization ' +
+          configuration.organizationName +
+          ' and project ' +
+          configuration.projectName +
+          '.',
+      });
+    });
+  });
+});

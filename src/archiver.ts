@@ -169,18 +169,20 @@ export class Archiver extends Construct {
    * @memberof Archiver
    */
   private createProjects() {
-    this.props.backupConfigurations.forEach((element) => {
-      const project = this.createProject(element);
+    this.props.backupConfigurations.forEach((configuration) => {
+      const project = this.createProject(configuration);
       project.enableBatchBuilds();
       this.bucket.grantReadWrite(project);
-      new events.Rule(this, 'ScheduleRule-'+ element.organizationName + '-' + element.projectName, {
-        enabled: true,
-        schedule: events.Schedule.expression(DEFAULT_CRON_EXPRESSION),
-        targets: [new eventsTargets.CodeBuildProject(project)],
-        description: 'Trigger for Azure DevOps git repositories backup',
-      });
-      console.log(element);
+      this.createCloudwatchRule(project, configuration);
+    });
+  }
 
+  private createCloudwatchRule(project: codebuild.Project, element: BackupConfiguration) {
+    new events.Rule(this, 'ScheduleRule-' + element.organizationName + '-' + element.projectName, {
+      enabled: true,
+      schedule: events.Schedule.expression(DEFAULT_CRON_EXPRESSION),
+      targets: [new eventsTargets.CodeBuildProject(project)],
+      description: 'Trigger for backing up Azure DevOps git repositories of organization ' + element.organizationName + ' and project ' + element.projectName +'.',
     });
   }
 
