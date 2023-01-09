@@ -35,12 +35,12 @@ export class Archiver extends Construct {
   logGroup: logs.LogGroup;
 
   /**
-   *The KMS key used to encrypt the logs.
+   *The KMS key used to encrypt the logs and the SNS topic.
    *
    * @type {kms.Key}
    * @memberof Archiver
    */
-  logGroupKmsKey: kms.Key;
+  kmsKey: kms.Key;
 
   /**
    *The S3 bucket used to store the git repositories archive.
@@ -62,10 +62,11 @@ export class Archiver extends Construct {
     super(scope, id);
     this.props = props;
 
-    this.logGroupKmsKey = this.createLogGroupKey();
+    this.kmsKey = this.createKey();
     this.logGroup = this.createLogGroup();
     this.topic = new sns.Topic(this, 'notifications', {
       displayName: 'archiver-notifications',
+      masterKey: this.kmsKey,
     });
 
     this.bucket = this.createArchiveBucket();
@@ -88,9 +89,9 @@ export class Archiver extends Construct {
       value: this.logGroup.logGroupArn,
     });
 
-    new CfnOutput(this, 'log-group-key', {
-      description: 'ARN of the KMS key used to encrypt the Cloudwatch logs.',
-      value: this.logGroupKmsKey.keyArn,
+    new CfnOutput(this, 'kms-key', {
+      description: 'ARN of the KMS key used to encrypt the Cloudwatch logs and the SNS topic.',
+      value: this.kmsKey.keyArn,
     });
 
     new CfnOutput(this, 'sns-topic-arn', {
@@ -101,12 +102,12 @@ export class Archiver extends Construct {
 
   private createLogGroup() {
     const loggroup = new logs.LogGroup(this, 'loggroup', {
-      encryptionKey: this.logGroupKmsKey,
+      encryptionKey: this.kmsKey,
       retention: this.props.retentionDays
         ? this.props.retentionDays
         : logs.RetentionDays.ONE_MONTH,
     });
-    loggroup.node.addDependency(this.logGroupKmsKey);
+    loggroup.node.addDependency(this.kmsKey);
     return loggroup;
   }
 
@@ -147,14 +148,14 @@ export class Archiver extends Construct {
     });
   }
 
-  private createLogGroupKey() {
+  private createKey() {
     const key = new kms.Key(this, 'loggroupKey', {
-      description: 'Repository Archiver',
+      description: 'Azure DevOps git repository archiver',
       enableKeyRotation: true,
       pendingWindow: Duration.days(7),
       keyUsage: kms.KeyUsage.ENCRYPT_DECRYPT,
       keySpec: kms.KeySpec.SYMMETRIC_DEFAULT,
-      alias: 'archiver-loggroup-key',
+      alias: 'archiver-key',
     });
     key.grantEncryptDecrypt(
       new iam.ServicePrincipal(`logs.${Stack.of(this).region}.amazonaws.com`),

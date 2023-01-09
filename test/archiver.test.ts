@@ -1,5 +1,6 @@
 import * as cdk from 'aws-cdk-lib/';
 import * as assertions from 'aws-cdk-lib/assertions';
+import { CfnKey } from 'aws-cdk-lib/aws-kms';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import { Archiver } from '../src/archiver';
 
@@ -54,7 +55,7 @@ describe('S3 Bucket settings', () => {
 describe('SNS settings', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'stack', {});
-  new Archiver(stack, 'archiver', {
+  const archiver = new Archiver(stack, 'archiver', {
     backupConfigurations: [],
   });
   const template = assertions.Template.fromStack(stack);
@@ -66,6 +67,17 @@ describe('SNS settings', () => {
   test('SNS Topic display name', () => {
     template.hasResourceProperties('AWS::SNS::Topic', {
       DisplayName: 'archiver-notifications',
+    });
+  });
+
+  test('SNS Topic encryption', () => {
+    const logicalId = stack.getLogicalId(
+      archiver.kmsKey.node.defaultChild as CfnKey,
+    );
+
+    template.hasResourceProperties('AWS::SNS::Topic', {
+      DisplayName: 'archiver-notifications',
+      KmsMasterKeyId: { 'Fn::GetAtt': [logicalId, 'Arn'] },
     });
   });
 });
