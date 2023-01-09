@@ -86,8 +86,8 @@ Any object.
 | --- | --- | --- |
 | <code><a href="#azure-devops-repository-archiver.Archiver.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
 | <code><a href="#azure-devops-repository-archiver.Archiver.property.bucket">bucket</a></code> | <code>aws-cdk-lib.aws_s3.Bucket</code> | The S3 bucket used to store the git repositories archive. |
+| <code><a href="#azure-devops-repository-archiver.Archiver.property.kmsKey">kmsKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | The KMS key used to encrypt the logs and the SNS topic. |
 | <code><a href="#azure-devops-repository-archiver.Archiver.property.logGroup">logGroup</a></code> | <code>aws-cdk-lib.aws_logs.LogGroup</code> | Log group used by the CodeBuild projects. |
-| <code><a href="#azure-devops-repository-archiver.Archiver.property.logGroupKmsKey">logGroupKmsKey</a></code> | <code>aws-cdk-lib.aws_kms.Key</code> | The KMS key used to encrypt the logs. |
 | <code><a href="#azure-devops-repository-archiver.Archiver.property.props">props</a></code> | <code><a href="#azure-devops-repository-archiver.ArchiverProperties">ArchiverProperties</a></code> | *No description.* |
 | <code><a href="#azure-devops-repository-archiver.Archiver.property.topic">topic</a></code> | <code>aws-cdk-lib.aws_sns.Topic</code> | SNS topic to send configured bucket events to. |
 
@@ -117,6 +117,18 @@ The S3 bucket used to store the git repositories archive.
 
 ---
 
+##### `kmsKey`<sup>Required</sup> <a name="kmsKey" id="azure-devops-repository-archiver.Archiver.property.kmsKey"></a>
+
+```typescript
+public readonly kmsKey: Key;
+```
+
+- *Type:* aws-cdk-lib.aws_kms.Key
+
+The KMS key used to encrypt the logs and the SNS topic.
+
+---
+
 ##### `logGroup`<sup>Required</sup> <a name="logGroup" id="azure-devops-repository-archiver.Archiver.property.logGroup"></a>
 
 ```typescript
@@ -126,18 +138,6 @@ public readonly logGroup: LogGroup;
 - *Type:* aws-cdk-lib.aws_logs.LogGroup
 
 Log group used by the CodeBuild projects.
-
----
-
-##### `logGroupKmsKey`<sup>Required</sup> <a name="logGroupKmsKey" id="azure-devops-repository-archiver.Archiver.property.logGroupKmsKey"></a>
-
-```typescript
-public readonly logGroupKmsKey: Key;
-```
-
-- *Type:* aws-cdk-lib.aws_kms.Key
-
-The KMS key used to encrypt the logs.
 
 ---
 
