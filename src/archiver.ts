@@ -23,9 +23,7 @@ import { BackupConfiguration } from './backupConfiguration';
  */
 const DEFAULT_CRON_EXPRESSION = 'cron(0 0 ? * 1 *)';
 
-
 export class Archiver extends Construct {
-
   props: ArchiverProperties;
 
   /**
@@ -85,14 +83,13 @@ export class Archiver extends Construct {
    */
   private createS3Notifications() {
     if (this.props.notificationEvents) {
-      this.props.notificationEvents.forEach(event => {
+      this.props.notificationEvents.forEach((event) => {
         this.bucket.addEventNotification(
           event,
           new s3Notifications.SnsDestination(this.topic),
         );
       });
     }
-
   }
 
   private createCfnOutputs() {
@@ -179,6 +176,10 @@ export class Archiver extends Construct {
     key.grantEncryptDecrypt(
       new iam.ServicePrincipal(`logs.${Stack.of(this).region}.amazonaws.com`),
     );
+    if (this.props.notificationEvents) {
+      key.grantEncryptDecrypt(new iam.ServicePrincipal('s3.amazonaws.com'));
+    }
+
     return key;
   }
 
