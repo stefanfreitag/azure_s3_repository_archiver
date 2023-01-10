@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib/';
 import * as assertions from 'aws-cdk-lib/assertions';
 import { CfnKey } from 'aws-cdk-lib/aws-kms';
 import * as logs from 'aws-cdk-lib/aws-logs';
+import { CfnBucket, EventType } from 'aws-cdk-lib/aws-s3';
 import { Archiver } from '../src/archiver';
 
 describe('S3 Bucket settings', () => {
@@ -47,6 +48,84 @@ describe('S3 Bucket settings', () => {
     template.hasResourceProperties('AWS::S3::Bucket', {
       VersioningConfiguration: {
         Status: 'Enabled',
+      },
+    });
+  });
+});
+
+describe('S3 events', () => {
+  test('Zero configured S3 events', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack', {});
+
+    new Archiver(stack, 'archiver', {
+      backupConfigurations: [],
+    });
+    const template = assertions.Template.fromStack(stack);
+    template.resourceCountIs('Custom::S3BucketNotifications', 0);
+  });
+
+  test('One configured S3 events', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack', {});
+
+    const archiver = new Archiver(stack, 'archiver', {
+      backupConfigurations: [],
+      notificationEvents: [EventType.LIFECYCLE_EXPIRATION],
+    });
+    const template = assertions.Template.fromStack(stack);
+    const logicalBucketId = stack.getLogicalId(
+      archiver.bucket.node.defaultChild as CfnBucket,
+    );
+    const logicalTopicId = stack.getLogicalId(
+      archiver.topic.node.defaultChild as CfnBucket,
+    );
+
+    template.resourceCountIs('Custom::S3BucketNotifications', 1);
+    template.hasResourceProperties('Custom::S3BucketNotifications', {
+      BucketName: { Ref: logicalBucketId },
+      NotificationConfiguration: {
+        TopicConfigurations: [
+          {
+            TopicArn: { Ref: logicalTopicId },
+            Events: ['s3:LifecycleExpiration:*'],
+          },
+        ],
+      },
+    });
+  });
+
+  test('Multiple configured S3 events', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack', {});
+
+    const archiver = new Archiver(stack, 'archiver', {
+      backupConfigurations: [],
+      notificationEvents: [EventType.LIFECYCLE_EXPIRATION, EventType.OBJECT_CREATED],
+    });
+    const template = assertions.Template.fromStack(stack);
+
+    const logicalBucketId = stack.getLogicalId(
+      archiver.bucket.node.defaultChild as CfnBucket,
+    );
+    const logicalTopicId = stack.getLogicalId(
+      archiver.topic.node.defaultChild as CfnBucket,
+    );
+
+    template.resourceCountIs('Custom::S3BucketNotifications', 1);
+    template.hasResourceProperties('Custom::S3BucketNotifications', {
+      BucketName: { Ref: logicalBucketId },
+      NotificationConfiguration: {
+        TopicConfigurations: [
+          {
+            TopicArn: { Ref: logicalTopicId },
+            Events: ['s3:LifecycleExpiration:*'],
+          },
+          {
+            TopicArn: { Ref: logicalTopicId },
+            Events: ['s3:ObjectCreated:*'],
+          },
+        ],
       },
     });
   });
