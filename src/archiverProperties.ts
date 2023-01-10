@@ -1,5 +1,10 @@
-import { aws_logs as logs } from 'aws-cdk-lib';
+import {
+  aws_logs as logs,
+  aws_s3 as s3,
+} from 'aws-cdk-lib';
 import { BackupConfiguration } from './backupConfiguration';
+
+
 export interface ArchiverProperties {
   /**
    * Number of days to keep the Cloudwatch logs.
@@ -9,6 +14,16 @@ export interface ArchiverProperties {
    * @memberof ArchiverProperties
    */
   readonly retentionDays?: logs.RetentionDays;
+
+  /**
+   * S3 events that will trigger a message to the SNS topic. For example
+   * "EventType.LIFECYCLE_EXPIRATION" or "EventType.OBJECT_CREATED".
+   *
+   *
+   * @type {s3.EventType[]}
+   * @memberof ArchiverProperties
+   */
+  readonly notificationEvents?: s3.EventType[];
   /**
    * Contains details on the git repositories to be backed up.
    *

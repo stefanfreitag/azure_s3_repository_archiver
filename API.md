@@ -181,6 +181,7 @@ const archiverProperties: ArchiverProperties = { ... }
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#azure-devops-repository-archiver.ArchiverProperties.property.backupConfigurations">backupConfigurations</a></code> | <code><a href="#azure-devops-repository-archiver.BackupConfiguration">BackupConfiguration</a>[]</code> | Contains details on the git repositories to be backed up. |
+| <code><a href="#azure-devops-repository-archiver.ArchiverProperties.property.notificationEvents">notificationEvents</a></code> | <code>aws-cdk-lib.aws_s3.EventType[]</code> | S3 events that will trigger a message to the SNS topic. |
 | <code><a href="#azure-devops-repository-archiver.ArchiverProperties.property.retentionDays">retentionDays</a></code> | <code>aws-cdk-lib.aws_logs.RetentionDays</code> | Number of days to keep the Cloudwatch logs. |
 
 ---
@@ -194,6 +195,21 @@ public readonly backupConfigurations: BackupConfiguration[];
 - *Type:* <a href="#azure-devops-repository-archiver.BackupConfiguration">BackupConfiguration</a>[]
 
 Contains details on the git repositories to be backed up.
+
+---
+
+##### `notificationEvents`<sup>Optional</sup> <a name="notificationEvents" id="azure-devops-repository-archiver.ArchiverProperties.property.notificationEvents"></a>
+
+```typescript
+public readonly notificationEvents: EventType[];
+```
+
+- *Type:* aws-cdk-lib.aws_s3.EventType[]
+
+S3 events that will trigger a message to the SNS topic.
+
+For example
+"EventType.LIFECYCLE_EXPIRATION" or "EventType.OBJECT_CREATED".
 
 ---
 

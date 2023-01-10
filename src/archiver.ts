@@ -23,7 +23,9 @@ import { BackupConfiguration } from './backupConfiguration';
  */
 const DEFAULT_CRON_EXPRESSION = 'cron(0 0 ? * 1 *)';
 
+
 export class Archiver extends Construct {
+
   props: ArchiverProperties;
 
   /**
@@ -70,12 +72,27 @@ export class Archiver extends Construct {
     });
 
     this.bucket = this.createArchiveBucket();
-    this.bucket.addEventNotification(
-      s3.EventType.OBJECT_CREATED,
-      new s3Notifications.SnsDestination(this.topic),
-    );
+    this.createS3Notifications();
     this.createProjects();
     this.createCfnOutputs();
+  }
+
+  /**
+   * Set up the S3-related event notifcations.
+   *
+   * @private
+   * @memberof Archiver
+   */
+  private createS3Notifications() {
+    if (this.props.notificationEvents) {
+      this.props.notificationEvents.forEach(event => {
+        this.bucket.addEventNotification(
+          event,
+          new s3Notifications.SnsDestination(this.topic),
+        );
+      });
+    }
+
   }
 
   private createCfnOutputs() {
@@ -85,12 +102,14 @@ export class Archiver extends Construct {
     });
 
     new CfnOutput(this, 'log-group-arn', {
-      description: 'ARN of the Cloudwatch Log group storing the code build logs.',
+      description:
+        'ARN of the Cloudwatch Log group storing the code build logs.',
       value: this.logGroup.logGroupArn,
     });
 
     new CfnOutput(this, 'kms-key', {
-      description: 'ARN of the KMS key used to encrypt the Cloudwatch logs and the SNS topic.',
+      description:
+        'ARN of the KMS key used to encrypt the Cloudwatch logs and the SNS topic.',
       value: this.kmsKey.keyArn,
     });
 
@@ -178,13 +197,25 @@ export class Archiver extends Construct {
     });
   }
 
-  private createCloudwatchRule(project: codebuild.Project, element: BackupConfiguration) {
-    new events.Rule(this, 'ScheduleRule-' + element.organizationName + '-' + element.projectName, {
-      enabled: true,
-      schedule: events.Schedule.expression(DEFAULT_CRON_EXPRESSION),
-      targets: [new eventsTargets.CodeBuildProject(project)],
-      description: 'Trigger for backing up Azure DevOps git repositories of organization ' + element.organizationName + ' and project ' + element.projectName +'.',
-    });
+  private createCloudwatchRule(
+    project: codebuild.Project,
+    element: BackupConfiguration,
+  ) {
+    new events.Rule(
+      this,
+      'ScheduleRule-' + element.organizationName + '-' + element.projectName,
+      {
+        enabled: true,
+        schedule: events.Schedule.expression(DEFAULT_CRON_EXPRESSION),
+        targets: [new eventsTargets.CodeBuildProject(project)],
+        description:
+          'Trigger for backing up Azure DevOps git repositories of organization ' +
+          element.organizationName +
+          ' and project ' +
+          element.projectName +
+          '.',
+      },
+    );
   }
 
   /**
