@@ -262,7 +262,7 @@ export class Archiver extends Construct {
         buildSpec: codebuild.BuildSpec.fromObject({
           version: 0.2,
           batch: {
-            'fail-fast': false,
+            'fast-fail': false,
             'build-list': this.createBatchConfiguration(
               element.repositoryNames,
             ),
