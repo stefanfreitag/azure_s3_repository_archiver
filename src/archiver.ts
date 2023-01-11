@@ -268,6 +268,12 @@ export class Archiver extends Construct {
             ),
           },
           phases: {
+            install: {
+              'commands': [
+                'yum install -y git',
+              ],
+              'on-failure': 'ABORT',
+            },
             pre_build: {
               'commands': [
                 'if [ -z "${ORGANIZATION}" ]; then echo "Missing environment variable ORGANIZATION."; exit 1 ; fi',
