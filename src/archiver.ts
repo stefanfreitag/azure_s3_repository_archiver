@@ -268,6 +268,15 @@ export class Archiver extends Construct {
             ),
           },
           phases: {
+            pre_build: {
+              'commands': [
+                'if [ -z "${ORGANIZATION}" ]; then echo "Missing environment variable ORGANIZATION."; exit 1 ; fi',
+                'if [ -z "${REPOSITORY}" ]; then echo "Missing environment variable REPOSITORY."; exit 1 ; fi',
+                'if [ -z "${PROJECT}" ]; then echo "Missing environment variable PROJECT."; exit 1 ; fi',
+                'if [ -z "${TOKEN}" ]; then echo "Missing environment variable TOKEN."; exit 1 ; fi',
+              ],
+              'on-failure': 'ABORT',
+            },
             build: {
               commands: [
                 'git clone --mirror "https://${TOKEN}@dev.azure.com/${ORGANIZATION}/${PROJECT}/_git/${REPOSITORY}"',
