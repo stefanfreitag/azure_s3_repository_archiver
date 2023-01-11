@@ -270,7 +270,7 @@ export class Archiver extends Construct {
           phases: {
             install: {
               'commands': [
-                'yum install -y git',
+                'apt install -y git',
               ],
               'on-failure': 'ABORT',
             },
