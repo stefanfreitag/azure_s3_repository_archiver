@@ -7,7 +7,29 @@
 
 ![Release](https://github.com/stefanfreitag/azure_s3_repository_archiver/workflows/release/badge.svg)
 
-Allows to backup regularly git repositories hosted in Azure DevOps to an S3 Bucket.
+Allows to backup regularly git repositories hosted in Azure DevOps to an S3 Bucket.  
+In the S3 bucket the backups are placed in a "directory" structure like
+
+```plain
+|
+|--- organization 1
+|       |
+|       |--- project 1 
+|       |      |
+|       |      |--- repository 1
+|       |      |
+|       |      |--- repository 2
+|       |      |  ...
+|       |
+|       |--- project 2
+|       |
+|       |--- ... 
+|
+|
+|--- organization 2
+| ...
+```
+
 
 ## Features
 
@@ -15,24 +37,20 @@ The S3 bucket is configured as below
 
 - enabled versioning of objects
 - enabled encryption using an S3 managed Key
-- disallowing publich access
+- disallowing public access
 - A lifecycle configuration for the archived repositories. They transistion
   through different storage classes
   - Infrequent Access after 30 days
   - Glacier after 90 days
   - Deep Archive 180 days
   - Expiry after 365 days
+- configurable notifications to SNS about uploaded/ expired objects
 
 The CodeBuild projects are configured as below
 
 - Logging to CloudWatch
   - Configurable retention period. Default is one month.
   - Encryption using customer-managed KMS key
-- Notifications to SNS about uploaded objects
-
-## Planned Features
-
-- Tagging of created AWS resources
 
 ## Prerequisites
 
@@ -44,7 +62,9 @@ The PAT needs to have "Code read" permission and stored in a SecretsManager secr
 aws secretsmanager create-secret --name repository_archiver --description "Secret for the repository archiver" --secret-string "{\"pat\":\"<your_pat>\"}"
 ```
 
-## Example (Typescript)
+## How to use
+
+### Example (Typescript)
 
 - Add the library to your dependencies, e.g to the `package.json` file
 
