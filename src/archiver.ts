@@ -61,7 +61,6 @@ export class Archiver extends Construct {
   constructor(scope: Construct, id: string, props: ArchiverProperties) {
     super(scope, id);
     this.props = props;
-
     this.kmsKey = this.createKey();
     this.logGroup = this.createLogGroup();
     this.topic = new sns.Topic(this, 'notifications', {
@@ -192,7 +191,6 @@ export class Archiver extends Construct {
   private createProjects() {
     this.props.backupConfigurations.forEach((configuration) => {
       const project = this.createProject(configuration);
-      project.enableBatchBuilds();
       this.bucket.grantReadWrite(project);
       this.createCloudwatchRule(project, configuration);
     });
@@ -261,36 +259,9 @@ export class Archiver extends Construct {
         },
         buildSpec: codebuild.BuildSpec.fromObject({
           version: 0.2,
-          batch: {
-            'fast-fail': false,
-            'build-list': this.createBatchConfiguration(
-              element.repositoryNames,
-            ),
-          },
           phases: {
-            install: {
-              'commands': [
-                'apt install -y git',
-              ],
-              'on-failure': 'ABORT',
-            },
-            pre_build: {
-              'commands': [
-                'if [ -z "${ORGANIZATION}" ]; then echo "Missing environment variable ORGANIZATION."; exit 1 ; fi',
-                'if [ -z "${REPOSITORY}" ]; then echo "Missing environment variable REPOSITORY."; exit 1 ; fi',
-                'if [ -z "${PROJECT}" ]; then echo "Missing environment variable PROJECT."; exit 1 ; fi',
-                'if [ -z "${TOKEN}" ]; then echo "Missing environment variable TOKEN."; exit 1 ; fi',
-              ],
-              'on-failure': 'ABORT',
-            },
             build: {
-              commands: [
-                'git clone --mirror "https://${TOKEN}@dev.azure.com/${ORGANIZATION}/${PROJECT}/_git/${REPOSITORY}"',
-                'tar czf ${REPOSITORY}.tgz ./${REPOSITORY}.git',
-                'aws s3 cp ./${REPOSITORY}.tgz ' +
-                  this.bucket.s3UrlForObject() +
-                  '/${ORGANIZATION}/${PROJECT}/${REPOSITORY}.tgz',
-              ],
+              commands: this.createCommands(element.repositoryNames),
             },
           },
         }),
@@ -298,23 +269,17 @@ export class Archiver extends Construct {
     );
   }
 
-  private createBatchConfiguration(repositoryNames: string[]) {
-    const output: BatchListElement[] = [];
+  private createCommands(repositoryNames: string[]) {
+    const output: string[] = [];
     repositoryNames.forEach((element) => {
-      output.push({
-        identifier: 'build_' + element.replace(/-/g, '_'),
-        env: {
-          variables: {
-            REPOSITORY: element,
-          },
-        },
-      });
+      output.push(
+        'git clone --mirror "https://${TOKEN}@dev.azure.com/${ORGANIZATION}/${PROJECT}/_git/' + element+ '"',
+        'tar czf '+ element +'.tgz ' + element+'.git',
+        'aws s3 cp ./'+ element +'.tgz ' +
+          this.bucket.s3UrlForObject() +
+          '/${ORGANIZATION}/${PROJECT}/'+ element+'.tgz',
+        'rm -f '+ element +'.tgz');
     });
     return output;
   }
-}
-
-export interface BatchListElement {
-  readonly identifier: string;
-  readonly env: Object;
 }
