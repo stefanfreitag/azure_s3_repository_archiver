@@ -10,7 +10,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
     twitter: 'stefanfreitag',
     announce: false,
   },
-  cdkVersion: '2.59.0',
+  cdkVersion: '2.60.0',
   codeCov: true,
   defaultReleaseBranch: 'main',
   depsUpgradeOptions: {
