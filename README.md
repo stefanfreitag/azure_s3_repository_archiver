@@ -41,7 +41,7 @@ token](https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/use
 The PAT needs to have "Code read" permission and stored in a SecretsManager secret
 
 ```shell
-aws secretsmanager create-secret --name rwest_archiver_rwest_platform --description "RWEST Archiver for RWEST-Platform organization" --secret-string "{\"pat\":\"<your_pat>\"}"
+aws secretsmanager create-secret --name repository_archiver --description "Secret for the repository archiver" --secret-string "{\"pat\":\"<your_pat>\"}"
 ```
 
 ## Example (Typescript)
@@ -51,7 +51,7 @@ aws secretsmanager create-secret --name rwest_archiver_rwest_platform --descript
   ```javascript
   "dependencies": {
     [...],
-    "azure-devops-repository-archiver": "0.0.9",
+    "azure-devops-repository-archiver": "0.0.23",
   },
   ```
 
@@ -105,3 +105,4 @@ aws secretsmanager create-secret --name rwest_archiver_rwest_platform --descript
 
 - [projen](https://github.com/projen/projen)
 - [cdk](https://github.com/aws/aws-cdk)
+- [AWS CodeBuild Specification](https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html)
