@@ -6,19 +6,22 @@ import { CfnBucket, EventType } from 'aws-cdk-lib/aws-s3';
 import { Archiver } from '../src/archiver';
 
 describe('S3 Bucket settings', () => {
-  const app = new cdk.App();
-  const stack = new cdk.Stack(app, 'stack', {});
-  new Archiver(stack, 'archiver', {
-    backupConfigurations: [],
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'stack', {});
+    new Archiver(stack, 'archiver', {
+      backupConfigurations: [],
+    });
   });
-  const template = assertions.Template.fromStack(stack);
 
   test('Exactly one S3 bucket is created', () => {
-    template.resourceCountIs('AWS::S3::Bucket', 1);
+    assertions.Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
   });
 
   test('S3 bucket is not public accessible', () => {
-    template.hasResourceProperties('AWS::S3::Bucket', {
+    assertions.Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       PublicAccessBlockConfiguration: {
         BlockPublicAcls: true,
         BlockPublicPolicy: true,
@@ -29,8 +32,8 @@ describe('S3 Bucket settings', () => {
   });
 
   test('S3 bucket has encryption enabled', () => {
-    template.resourceCountIs('AWS::S3::Bucket', 1);
-    template.hasResourceProperties('AWS::S3::Bucket', {
+    assertions.Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
+    assertions.Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       BucketEncryption: {
         ServerSideEncryptionConfiguration: [
           {
@@ -44,8 +47,8 @@ describe('S3 Bucket settings', () => {
   });
 
   test('S3 bucket has versioning enabled', () => {
-    template.resourceCountIs('AWS::S3::Bucket', 1);
-    template.hasResourceProperties('AWS::S3::Bucket', {
+    assertions.Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
+    assertions.Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       VersioningConfiguration: {
         Status: 'Enabled',
       },
@@ -54,26 +57,26 @@ describe('S3 Bucket settings', () => {
 });
 
 describe('S3 events', () => {
-  test('Zero configured S3 events', () => {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'stack', {});
+  let stack: cdk.Stack;
 
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'stack', {});
+  });
+
+  test('Zero configured S3 events', () => {
     new Archiver(stack, 'archiver', {
       backupConfigurations: [],
     });
-    const template = assertions.Template.fromStack(stack);
-    template.resourceCountIs('Custom::S3BucketNotifications', 0);
+    assertions.Template.fromStack(stack).resourceCountIs('Custom::S3BucketNotifications', 0);
   });
 
   test('One configured S3 events', () => {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'stack', {});
-
     const archiver = new Archiver(stack, 'archiver', {
       backupConfigurations: [],
       notificationEvents: [EventType.LIFECYCLE_EXPIRATION],
     });
-    const template = assertions.Template.fromStack(stack);
+
     const logicalBucketId = stack.getLogicalId(
       archiver.bucket.node.defaultChild as CfnBucket,
     );
@@ -81,8 +84,8 @@ describe('S3 events', () => {
       archiver.topic.node.defaultChild as CfnBucket,
     );
 
-    template.resourceCountIs('Custom::S3BucketNotifications', 1);
-    template.hasResourceProperties('Custom::S3BucketNotifications', {
+    assertions.Template.fromStack(stack).resourceCountIs('Custom::S3BucketNotifications', 1);
+    assertions.Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
       BucketName: { Ref: logicalBucketId },
       NotificationConfiguration: {
         TopicConfigurations: [
@@ -96,14 +99,11 @@ describe('S3 events', () => {
   });
 
   test('Multiple configured S3 events', () => {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'stack', {});
 
     const archiver = new Archiver(stack, 'archiver', {
       backupConfigurations: [],
       notificationEvents: [EventType.LIFECYCLE_EXPIRATION, EventType.OBJECT_CREATED],
     });
-    const template = assertions.Template.fromStack(stack);
 
     const logicalBucketId = stack.getLogicalId(
       archiver.bucket.node.defaultChild as CfnBucket,
@@ -112,8 +112,8 @@ describe('S3 events', () => {
       archiver.topic.node.defaultChild as CfnBucket,
     );
 
-    template.resourceCountIs('Custom::S3BucketNotifications', 1);
-    template.hasResourceProperties('Custom::S3BucketNotifications', {
+    assertions.Template.fromStack(stack).resourceCountIs('Custom::S3BucketNotifications', 1);
+    assertions.Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
       BucketName: { Ref: logicalBucketId },
       NotificationConfiguration: {
         TopicConfigurations: [
@@ -132,19 +132,22 @@ describe('S3 events', () => {
 });
 
 describe('SNS settings', () => {
-  const app = new cdk.App();
-  const stack = new cdk.Stack(app, 'stack', {});
-  const archiver = new Archiver(stack, 'archiver', {
-    backupConfigurations: [],
+  let stack: cdk.Stack;
+  let archiver: Archiver;
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'stack', {});
+    archiver = new Archiver(stack, 'archiver', {
+      backupConfigurations: [],
+    });
   });
-  const template = assertions.Template.fromStack(stack);
 
   test('SNS topic count', () => {
-    template.resourceCountIs('AWS::SNS::Topic', 1);
+    assertions.Template.fromStack(stack).resourceCountIs('AWS::SNS::Topic', 1);
   });
 
   test('SNS Topic display name', () => {
-    template.hasResourceProperties('AWS::SNS::Topic', {
+    assertions.Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
       DisplayName: 'archiver-notifications',
     });
   });
@@ -154,7 +157,7 @@ describe('SNS settings', () => {
       archiver.kmsKey.node.defaultChild as CfnKey,
     );
 
-    template.hasResourceProperties('AWS::SNS::Topic', {
+    assertions.Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
       DisplayName: 'archiver-notifications',
       KmsMasterKeyId: { 'Fn::GetAtt': [logicalId, 'Arn'] },
     });
@@ -162,33 +165,35 @@ describe('SNS settings', () => {
 });
 
 describe('CodeBuild settings', () => {
-  const app = new cdk.App();
-  const stack = new cdk.Stack(app, 'stack', {});
-  new Archiver(stack, 'archiver', {
-    backupConfigurations: [
-      {
-        organizationName: 'organization-a',
-        projectName: 'project-b',
-        repositoryNames: ['repository-c'],
-        secretArn: 'secret-arn',
-      },
-      {
-        organizationName: 'organization-a',
-        projectName: 'project-d',
-        repositoryNames: ['repository-c'],
-        secretArn: 'secret-arn',
-      },
-    ],
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'stack', {});
+    new Archiver(stack, 'archiver', {
+      backupConfigurations: [
+        {
+          organizationName: 'organization-a',
+          projectName: 'project-b',
+          repositoryNames: ['repository-c'],
+          secretArn: 'secret-arn',
+        },
+        {
+          organizationName: 'organization-a',
+          projectName: 'project-d',
+          repositoryNames: ['repository-c'],
+          secretArn: 'secret-arn',
+        },
+      ],
+    });
   });
 
-  const template = assertions.Template.fromStack(stack);
-
   test('Exact number of CodeBuild projects are setup ', () => {
-    template.resourceCountIs('AWS::CodeBuild::Project', 2);
+    assertions.Template.fromStack(stack).resourceCountIs('AWS::CodeBuild::Project', 2);
   });
 
   test('Default CodeBuild configuration as expected ', () => {
-    template.hasResourceProperties('AWS::CodeBuild::Project', {
+    assertions.Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
         Image: 'aws/codebuild/standard:6.0',
       },
@@ -198,40 +203,51 @@ describe('CodeBuild settings', () => {
 });
 
 describe('Default Logging settings', () => {
-  const app = new cdk.App();
-  const stack = new cdk.Stack(app, 'stack', {});
-  new Archiver(stack, 'archiver', {
-    retentionDays: logs.RetentionDays.ONE_MONTH,
-    backupConfigurations: [
-      {
-        organizationName: 'organization-a',
-        projectName: 'project-b',
-        repositoryNames: ['repository-c'],
-        secretArn: 'secret-arn',
-      },
-      {
-        organizationName: 'organization-a',
-        projectName: 'project-d',
-        repositoryNames: ['repository-c'],
-        secretArn: 'secret-arn',
-      },
-    ],
+
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'stack', {});
+    new Archiver(stack, 'archiver', {
+      retentionDays: logs.RetentionDays.ONE_MONTH,
+      backupConfigurations: [
+        {
+          organizationName: 'organization-a',
+          projectName: 'project-b',
+          repositoryNames: ['repository-c'],
+          secretArn: 'secret-arn',
+        },
+        {
+          organizationName: 'organization-a',
+          projectName: 'project-d',
+          repositoryNames: ['repository-c'],
+          secretArn: 'secret-arn',
+        },
+      ],
+    });
   });
-  const template = assertions.Template.fromStack(stack);
 
   test('Exactly one Log Group is created', () => {
-    template.resourceCountIs('AWS::Logs::LogGroup', 1);
+    assertions.Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 1);
   });
 
   test('Default Log Group retention', () => {
-    template.hasResourceProperties('AWS::Logs::LogGroup', {
+    assertions.Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
       RetentionInDays: 30,
     });
   });
 });
+
 describe('Logging settings', () => {
-  const app = new cdk.App();
-  const stack = new cdk.Stack(app, 'stack', {});
+
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'stack', {});
+  });
+
 
   test('Custom retention period.', () => {
     new Archiver(stack, 'archiver', {
@@ -251,17 +267,16 @@ describe('Logging settings', () => {
         },
       ],
     });
-    const template = assertions.Template.fromStack(stack);
-
-    template.hasResourceProperties('AWS::Logs::LogGroup', {
+    assertions.Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
       RetentionInDays: 7,
     });
   });
 });
 
 describe('Cloudwatch rules', () => {
-  const app = new cdk.App();
-  const stack = new cdk.Stack(app, 'stack', {});
+
+
+  let stack: cdk.Stack;
   const backupConfigurations = [
     {
       organizationName: 'organization-a',
@@ -276,19 +291,23 @@ describe('Cloudwatch rules', () => {
       secretArn: 'secret-arn',
     },
   ];
-  new Archiver(stack, 'archiver', {
-    retentionDays: logs.RetentionDays.ONE_WEEK,
-    backupConfigurations,
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'stack', {});
+    new Archiver(stack, 'archiver', {
+      retentionDays: logs.RetentionDays.ONE_WEEK,
+      backupConfigurations,
+    });
   });
 
+
   test('Expected number of rules created', () => {
-    const template = assertions.Template.fromStack(stack);
-    template.resourceCountIs('AWS::Events::Rule', 2);
+    assertions.Template.fromStack(stack).resourceCountIs('AWS::Events::Rule', 2);
   });
   test('Description of rules', () => {
-    const template = assertions.Template.fromStack(stack);
     backupConfigurations.forEach((configuration) => {
-      template.hasResourceProperties('AWS::Events::Rule', {
+      assertions.Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
         Description:
           'Trigger for backing up Azure DevOps git repositories of organization ' +
           configuration.organizationName +
