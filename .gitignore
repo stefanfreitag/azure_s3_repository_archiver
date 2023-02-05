@@ -54,3 +54,4 @@ tsconfig.json
 .history/
 .venv
 .idea
+test/integ.*/

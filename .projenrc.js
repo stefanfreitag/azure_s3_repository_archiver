@@ -20,6 +20,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
     },
   },
   devContainer: true,
+  devDeps: ['@aws-cdk/integ-tests-alpha@2.63.1-alpha.0', '@aws-cdk/integ-runner', 'ts-node'],
   keywords: ['aws', 'azure-devops', 'cdk', 'backup', 's3'],
   name: 'azure-devops-repository-archiver',
   majorVersion: 1,
@@ -44,7 +45,7 @@ project.devContainer.name='cdk-dev-environment';
 project.devContainer.addDockerImage(DevEnvironmentDockerImage.fromFile('.gitpod.Dockerfile'));
 project.devContainer.addVscodeExtensions('esbenp.prettier-vscode', 'dbaeumer.vscode-eslint');
 
-const common_exclude = ['.history/', '.venv', '.idea'];
+const common_exclude = ['.history/', '.venv', '.idea', 'test/integ.*/'];
 project.npmignore.exclude(...common_exclude);
 project.gitignore.exclude(...common_exclude);
 

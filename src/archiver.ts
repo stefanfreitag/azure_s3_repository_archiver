@@ -170,7 +170,6 @@ export class Archiver extends Construct {
       pendingWindow: Duration.days(7),
       keyUsage: kms.KeyUsage.ENCRYPT_DECRYPT,
       keySpec: kms.KeySpec.SYMMETRIC_DEFAULT,
-      alias: 'archiver-key',
     });
     key.grantEncryptDecrypt(
       new iam.ServicePrincipal(`logs.${Stack.of(this).region}.amazonaws.com`),
