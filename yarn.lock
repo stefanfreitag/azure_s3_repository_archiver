@@ -25,9 +25,9 @@
   resolved "https://registry.npmjs.org/@aws-cdk/asset-node-proxy-agent-v5/-/asset-node-proxy-agent-v5-2.0.47.tgz"
   integrity sha512-RbDlsUgPqv2iCXfQEWdOlaelMqKNEpwweFg1L8VTK8NbF7iKbW2L461FzapWSpl2YSq/Gu1LAGCDYGyV4r1Lsg==
 
-"@aws-cdk/integ-runner@^2.64.0":
+"@aws-cdk/integ-runner@2.64.0":
   version "2.64.0"
-  resolved "https://registry.npmjs.org/@aws-cdk/integ-runner/-/integ-runner-2.64.0.tgz"
+  resolved "https://registry.yarnpkg.com/@aws-cdk/integ-runner/-/integ-runner-2.64.0.tgz#8655b5a95e7db5ea992112418c45281dd3674bd9"
   integrity sha512-mlWEfnqdcWpRNmEDT/oOSuaRLx+MFOxHmsKF74aj9jPPoTxsY3bNOlOB7wQ1P6KMideKANJynKE/9j6+bCigng==
   dependencies:
     aws-cdk "2.64.0"
@@ -1327,7 +1327,7 @@ aws-cdk-lib@2.64.0:
 
 aws-cdk@2.64.0:
   version "2.64.0"
-  resolved "https://registry.npmjs.org/aws-cdk/-/aws-cdk-2.64.0.tgz"
+  resolved "https://registry.yarnpkg.com/aws-cdk/-/aws-cdk-2.64.0.tgz#8dd6561c678053852ab16851292d7a2023f53bd9"
   integrity sha512-iXkvVeYKt6Glboeicrb3QxC6K6o25+zitM/UTfgVzDlKEvC4hwQp1KqXy/caN7SfA6X2N0LJmXfC99T4cvIH0A==
   optionalDependencies:
     fsevents "2.3.2"

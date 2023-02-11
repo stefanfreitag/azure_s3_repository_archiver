@@ -2,6 +2,7 @@
   "dependencies": [
     {
       "name": "@aws-cdk/integ-runner",
+      "version": "2.64.0",
       "type": "build"
     },
     {
