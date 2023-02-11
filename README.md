@@ -64,7 +64,7 @@ aws secretsmanager create-secret --name repository_archiver --description "Secre
 
 ## How to use
 
-### Example (Typescript)
+### Example
 
 - Add the library to your dependencies, e.g to the `package.json` file
 
@@ -120,6 +120,23 @@ aws secretsmanager create-secret --name repository_archiver --description "Secre
   };
   new Archiver(this, 'archiver', archiverProps);
   ```
+
+### Restoring a repository
+
+- Download the archive from S3 to your local machine.
+- Extract the archive.
+  
+  ```shell
+  tar xzf backup.tar
+  ```  
+
+- Create a new directory and run a `git clone` operation.
+  
+  ```shell
+  mkdir backup-repo
+  cd backup-repo
+  git clone ../backup.git
+  ```  
 
 ## Links
 
