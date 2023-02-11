@@ -20,7 +20,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
     },
   },
   devContainer: true,
-  devDeps: ['@aws-cdk/integ-tests-alpha@2.63.1-alpha.0', '@aws-cdk/integ-runner', 'ts-node'],
+  devDeps: ['@aws-cdk/integ-tests-alpha@2.64.0-alpha.0', '@aws-cdk/integ-runner', 'ts-node'],
   keywords: ['aws', 'azure-devops', 'cdk', 'backup', 's3'],
   name: 'azure-devops-repository-archiver',
   majorVersion: 1,
