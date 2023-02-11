@@ -2,14 +2,18 @@
 
 ## Integrations test
 
-- Installing integ-runner locally
+- Installing recent version of integ-runner locally
   
   ```shell
-  sudo npm i -g @aws-cdk
+  sudo npm install  -g @aws-cdk/integ-runner@2.64.0
   ```
 
 - Running integration tests
   
   ```shell
-  integ-runner --language typescript --parallel-regions eu-central-1
+  integ-runner -v --language typescript --parallel-regions eu-central-1
+  ```
+
+  ```shell
+  integ-runner -v --language typescript --parallel-regions eu-central-1 --update-on-failed
   ```
