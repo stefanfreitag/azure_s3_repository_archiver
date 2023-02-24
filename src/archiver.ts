@@ -156,6 +156,20 @@ export class Archiver extends Construct {
               transitionAfter: Duration.days(180),
             },
           ],
+          noncurrentVersionTransitions: [
+            {
+              storageClass: s3.StorageClass.INFREQUENT_ACCESS,
+              transitionAfter: Duration.days(30),
+            },
+            {
+              storageClass: s3.StorageClass.GLACIER,
+              transitionAfter: Duration.days(90),
+            },
+            {
+              storageClass: s3.StorageClass.DEEP_ARCHIVE,
+              transitionAfter: Duration.days(180),
+            },
+          ],
         },
       ],
       publicReadAccess: false,

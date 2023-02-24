@@ -11,9 +11,9 @@
 - Running integration tests
   
   ```shell
-  integ-runner -v --language typescript --parallel-regions eu-central-1
+  integ-runner -v --language typescript --parallel-regions eu-central-1 --profiles default
   ```
 
   ```shell
-  integ-runner -v --language typescript --parallel-regions eu-central-1 --update-on-failed
+  integ-runner -v --language typescript --parallel-regions eu-central-1 --profiles default --update-on-failed
   ```
