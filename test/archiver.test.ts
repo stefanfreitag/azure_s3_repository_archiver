@@ -32,7 +32,6 @@ describe('S3 Bucket settings', () => {
   });
 
   test('S3 bucket has encryption enabled', () => {
-    assertions.Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
     assertions.Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       BucketEncryption: {
         ServerSideEncryptionConfiguration: [
@@ -47,10 +46,61 @@ describe('S3 Bucket settings', () => {
   });
 
   test('S3 bucket has versioning enabled', () => {
-    assertions.Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
     assertions.Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       VersioningConfiguration: {
         Status: 'Enabled',
+      },
+    });
+  });
+
+  test('S3 bucket lifecycle policy for objects', () => {
+    assertions.Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      LifecycleConfiguration: {
+        Rules: [
+          {
+            ExpirationInDays: 360,
+            Status: 'Enabled',
+            Transitions: [
+              {
+                StorageClass: 'STANDARD_IA',
+                TransitionInDays: 30,
+              },
+              {
+                StorageClass: 'GLACIER',
+                TransitionInDays: 90,
+              },
+              {
+                StorageClass: 'DEEP_ARCHIVE',
+                TransitionInDays: 180,
+              },
+            ],
+          },
+        ],
+      },
+    });
+  });
+  test('S3 bucket lifecycle policy for non-current objects', () => {
+    assertions.Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      LifecycleConfiguration: {
+        Rules: [
+          {
+            Status: 'Enabled',
+            NoncurrentVersionTransitions: [
+              {
+                StorageClass: 'STANDARD_IA',
+                TransitionInDays: 30,
+              },
+              {
+                StorageClass: 'GLACIER',
+                TransitionInDays: 90,
+              },
+              {
+                StorageClass: 'DEEP_ARCHIVE',
+                TransitionInDays: 180,
+              },
+            ],
+          },
+        ],
       },
     });
   });

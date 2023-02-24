@@ -38,8 +38,8 @@ The S3 bucket is configured as below
 - enabled versioning of objects
 - enabled encryption using an S3 managed Key
 - disallowing public access
-- A lifecycle configuration for the archived repositories. They transistion
-  through different storage classes
+- A lifecycle configuration for the archived repositories. They and their
+  versions transistion through different storage classes
   - Infrequent Access after 30 days
   - Glacier after 90 days
   - Deep Archive 180 days
