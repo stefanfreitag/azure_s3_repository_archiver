@@ -45,7 +45,7 @@ project.devContainer.name='cdk-dev-environment';
 project.devContainer.addDockerImage(DevEnvironmentDockerImage.fromFile('.gitpod.Dockerfile'));
 project.devContainer.addVscodeExtensions('esbenp.prettier-vscode', 'dbaeumer.vscode-eslint');
 
-const common_exclude = ['.history/', '.venv', '.idea', 'test/integ.*/'];
+const common_exclude = ['.history/', '.venv', '.idea'];
 project.npmignore.exclude(...common_exclude);
 project.gitignore.exclude(...common_exclude);
 

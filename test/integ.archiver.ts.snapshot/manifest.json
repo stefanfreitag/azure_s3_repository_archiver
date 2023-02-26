@@ -1,0 +1,208 @@
+{
+  "version": "29.0.0",
+  "artifacts": {
+    "empty-backup-configuration.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "empty-backup-configuration.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "empty-backup-configuration": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "empty-backup-configuration.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7af0035486a17eff1f9b95b3823820dd8c8cf0e7d1d5e497fad5d11a8bea7a7b.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "empty-backup-configuration.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "empty-backup-configuration.assets"
+      ],
+      "metadata": {
+        "/empty-backup-configuration/archiver/loggroupKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "archiverloggroupKey7BCF083C"
+          }
+        ],
+        "/empty-backup-configuration/archiver/loggroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "archiverloggroup7C048019"
+          }
+        ],
+        "/empty-backup-configuration/archiver/notifications/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "archivernotifications2E31B1D9"
+          }
+        ],
+        "/empty-backup-configuration/archiver/destination/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "archiverdestination9B9DDE6E"
+          }
+        ],
+        "/empty-backup-configuration/archiver/destination/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "archiverdestinationPolicyC948AFFF"
+          }
+        ],
+        "/empty-backup-configuration/archiver/s3-bucket-arn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "archivers3bucketarn4FD82B78"
+          }
+        ],
+        "/empty-backup-configuration/archiver/log-group-arn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "archiverloggrouparn20EFDA53"
+          }
+        ],
+        "/empty-backup-configuration/archiver/kms-key": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "archiverkmskey096108C8"
+          }
+        ],
+        "/empty-backup-configuration/archiver/sns-topic-arn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "archiversnstopicarnDD9E4A24"
+          }
+        ],
+        "/empty-backup-configuration/Exports/Output{\"Ref\":\"archiverdestination9B9DDE6E\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefarchiverdestination9B9DDE6EBE1641C9"
+          }
+        ],
+        "/empty-backup-configuration/Exports/Output{\"Fn::GetAtt\":[\"archiverdestination9B9DDE6E\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttarchiverdestination9B9DDE6EArn0B50F630"
+          }
+        ],
+        "/empty-backup-configuration/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/empty-backup-configuration/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "empty-backup-configuration"
+    },
+    "MyTestCaseDefaultTestDeployAssertD814CC8D.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "MyTestCaseDefaultTestDeployAssertD814CC8D.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "MyTestCaseDefaultTestDeployAssertD814CC8D": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "MyTestCaseDefaultTestDeployAssertD814CC8D.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3b0e53604a6b9917523fe8968816d6ccb3d9c8024fdee5d74a806efccd32e429.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "MyTestCaseDefaultTestDeployAssertD814CC8D.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "empty-backup-configuration",
+        "MyTestCaseDefaultTestDeployAssertD814CC8D.assets"
+      ],
+      "metadata": {
+        "/MyTestCase/DefaultTest/DeployAssert/AwsApiCallS3getBucketVersioning/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallS3getBucketVersioning"
+          }
+        ],
+        "/MyTestCase/DefaultTest/DeployAssert/AwsApiCallS3getBucketVersioning/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallS3getBucketVersioning"
+          }
+        ],
+        "/MyTestCase/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/MyTestCase/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/MyTestCase/DefaultTest/DeployAssert/AwsApiCallS3getBucketEncryption/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallS3getBucketEncryption"
+          }
+        ],
+        "/MyTestCase/DefaultTest/DeployAssert/AwsApiCallS3getBucketEncryption/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallS3getBucketEncryption"
+          }
+        ],
+        "/MyTestCase/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/MyTestCase/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "MyTestCase/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

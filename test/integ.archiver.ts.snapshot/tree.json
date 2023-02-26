@@ -1,0 +1,593 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "empty-backup-configuration": {
+        "id": "empty-backup-configuration",
+        "path": "empty-backup-configuration",
+        "children": {
+          "archiver": {
+            "id": "archiver",
+            "path": "empty-backup-configuration/archiver",
+            "children": {
+              "loggroupKey": {
+                "id": "loggroupKey",
+                "path": "empty-backup-configuration/archiver/loggroupKey",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "empty-backup-configuration/archiver/loggroupKey/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::KMS::Key",
+                      "aws:cdk:cloudformation:props": {
+                        "keyPolicy": {
+                          "Statement": [
+                            {
+                              "Action": "kms:*",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "AWS": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":iam::",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":root"
+                                    ]
+                                  ]
+                                }
+                              },
+                              "Resource": "*"
+                            },
+                            {
+                              "Action": [
+                                "kms:Decrypt",
+                                "kms:Encrypt",
+                                "kms:GenerateDataKey*",
+                                "kms:ReEncrypt*"
+                              ],
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "logs.",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ".amazonaws.com"
+                                    ]
+                                  ]
+                                }
+                              },
+                              "Resource": "*"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "description": "Azure DevOps git repository archiver",
+                        "enableKeyRotation": true,
+                        "keySpec": "SYMMETRIC_DEFAULT",
+                        "keyUsage": "ENCRYPT_DECRYPT",
+                        "pendingWindowInDays": 7
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_kms.CfnKey",
+                      "version": "2.64.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_kms.Key",
+                  "version": "2.64.0"
+                }
+              },
+              "loggroup": {
+                "id": "loggroup",
+                "path": "empty-backup-configuration/archiver/loggroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "empty-backup-configuration/archiver/loggroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "kmsKeyId": {
+                          "Fn::GetAtt": [
+                            "archiverloggroupKey7BCF083C",
+                            "Arn"
+                          ]
+                        },
+                        "retentionInDays": 30
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                      "version": "2.64.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+                  "version": "2.64.0"
+                }
+              },
+              "notifications": {
+                "id": "notifications",
+                "path": "empty-backup-configuration/archiver/notifications",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "empty-backup-configuration/archiver/notifications/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                      "aws:cdk:cloudformation:props": {
+                        "displayName": "archiver-notifications",
+                        "kmsMasterKeyId": {
+                          "Fn::GetAtt": [
+                            "archiverloggroupKey7BCF083C",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_sns.CfnTopic",
+                      "version": "2.64.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sns.Topic",
+                  "version": "2.64.0"
+                }
+              },
+              "destination": {
+                "id": "destination",
+                "path": "empty-backup-configuration/archiver/destination",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "empty-backup-configuration/archiver/destination/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                      "aws:cdk:cloudformation:props": {
+                        "bucketEncryption": {
+                          "serverSideEncryptionConfiguration": [
+                            {
+                              "serverSideEncryptionByDefault": {
+                                "sseAlgorithm": "AES256"
+                              }
+                            }
+                          ]
+                        },
+                        "lifecycleConfiguration": {
+                          "rules": [
+                            {
+                              "expirationInDays": 360,
+                              "noncurrentVersionTransitions": [
+                                {
+                                  "storageClass": "STANDARD_IA",
+                                  "transitionInDays": 30
+                                },
+                                {
+                                  "storageClass": "GLACIER",
+                                  "transitionInDays": 90
+                                },
+                                {
+                                  "storageClass": "DEEP_ARCHIVE",
+                                  "transitionInDays": 180
+                                }
+                              ],
+                              "status": "Enabled",
+                              "transitions": [
+                                {
+                                  "storageClass": "STANDARD_IA",
+                                  "transitionInDays": 30
+                                },
+                                {
+                                  "storageClass": "GLACIER",
+                                  "transitionInDays": 90
+                                },
+                                {
+                                  "storageClass": "DEEP_ARCHIVE",
+                                  "transitionInDays": 180
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        "publicAccessBlockConfiguration": {
+                          "blockPublicAcls": true,
+                          "blockPublicPolicy": true,
+                          "ignorePublicAcls": true,
+                          "restrictPublicBuckets": true
+                        },
+                        "versioningConfiguration": {
+                          "status": "Enabled"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                      "version": "2.64.0"
+                    }
+                  },
+                  "Policy": {
+                    "id": "Policy",
+                    "path": "empty-backup-configuration/archiver/destination/Policy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "empty-backup-configuration/archiver/destination/Policy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                          "aws:cdk:cloudformation:props": {
+                            "bucket": {
+                              "Ref": "archiverdestination9B9DDE6E"
+                            },
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "s3:*",
+                                  "Condition": {
+                                    "Bool": {
+                                      "aws:SecureTransport": "false"
+                                    }
+                                  },
+                                  "Effect": "Deny",
+                                  "Principal": {
+                                    "AWS": "*"
+                                  },
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "archiverdestination9B9DDE6E",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "archiverdestination9B9DDE6E",
+                                              "Arn"
+                                            ]
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_s3.CfnBucketPolicy",
+                          "version": "2.64.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
+                      "version": "2.64.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.Bucket",
+                  "version": "2.64.0"
+                }
+              },
+              "s3-bucket-arn": {
+                "id": "s3-bucket-arn",
+                "path": "empty-backup-configuration/archiver/s3-bucket-arn",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "2.64.0"
+                }
+              },
+              "log-group-arn": {
+                "id": "log-group-arn",
+                "path": "empty-backup-configuration/archiver/log-group-arn",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "2.64.0"
+                }
+              },
+              "kms-key": {
+                "id": "kms-key",
+                "path": "empty-backup-configuration/archiver/kms-key",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "2.64.0"
+                }
+              },
+              "sns-topic-arn": {
+                "id": "sns-topic-arn",
+                "path": "empty-backup-configuration/archiver/sns-topic-arn",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "2.64.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.0.5"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "empty-backup-configuration/Exports",
+            "children": {
+              "Output{\"Ref\":\"archiverdestination9B9DDE6E\"}": {
+                "id": "Output{\"Ref\":\"archiverdestination9B9DDE6E\"}",
+                "path": "empty-backup-configuration/Exports/Output{\"Ref\":\"archiverdestination9B9DDE6E\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "2.64.0"
+                }
+              },
+              "Output{\"Fn::GetAtt\":[\"archiverdestination9B9DDE6E\",\"Arn\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"archiverdestination9B9DDE6E\",\"Arn\"]}",
+                "path": "empty-backup-configuration/Exports/Output{\"Fn::GetAtt\":[\"archiverdestination9B9DDE6E\",\"Arn\"]}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "2.64.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.0.5"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "empty-backup-configuration/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "2.64.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "empty-backup-configuration/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "2.64.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "2.64.0"
+        }
+      },
+      "MyTestCase": {
+        "id": "MyTestCase",
+        "path": "MyTestCase",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "MyTestCase/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "MyTestCase/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.5"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "MyTestCase/DefaultTest/DeployAssert",
+                "children": {
+                  "AwsApiCallS3getBucketVersioning": {
+                    "id": "AwsApiCallS3getBucketVersioning",
+                    "path": "MyTestCase/DefaultTest/DeployAssert/AwsApiCallS3getBucketVersioning",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "MyTestCase/DefaultTest/DeployAssert/AwsApiCallS3getBucketVersioning/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "MyTestCase/DefaultTest/DeployAssert/AwsApiCallS3getBucketVersioning/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.0.5"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "2.64.0-alpha.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "MyTestCase/DefaultTest/DeployAssert/AwsApiCallS3getBucketVersioning/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "MyTestCase/DefaultTest/DeployAssert/AwsApiCallS3getBucketVersioning/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "2.64.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "2.64.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "MyTestCase/DefaultTest/DeployAssert/AwsApiCallS3getBucketVersioning/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "2.64.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "2.64.0-alpha.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "MyTestCase/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "MyTestCase/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "2.64.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "MyTestCase/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "2.64.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "MyTestCase/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "2.64.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.5"
+                    }
+                  },
+                  "AwsApiCallS3getBucketEncryption": {
+                    "id": "AwsApiCallS3getBucketEncryption",
+                    "path": "MyTestCase/DefaultTest/DeployAssert/AwsApiCallS3getBucketEncryption",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "MyTestCase/DefaultTest/DeployAssert/AwsApiCallS3getBucketEncryption/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "MyTestCase/DefaultTest/DeployAssert/AwsApiCallS3getBucketEncryption/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.0.5"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "2.64.0-alpha.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "MyTestCase/DefaultTest/DeployAssert/AwsApiCallS3getBucketEncryption/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "MyTestCase/DefaultTest/DeployAssert/AwsApiCallS3getBucketEncryption/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "2.64.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "2.64.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "MyTestCase/DefaultTest/DeployAssert/AwsApiCallS3getBucketEncryption/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "2.64.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "2.64.0-alpha.0"
+                    }
+                  },
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "MyTestCase/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "2.64.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "MyTestCase/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "2.64.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "2.64.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "2.64.0-alpha.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "2.64.0-alpha.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.0.5"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "2.64.0"
+    }
+  }
+}

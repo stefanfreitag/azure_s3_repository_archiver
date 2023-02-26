@@ -1,0 +1,293 @@
+{
+ "Resources": {
+  "archiverloggroupKey7BCF083C": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:Encrypt",
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "Service": {
+         "Fn::Join": [
+          "",
+          [
+           "logs.",
+           {
+            "Ref": "AWS::Region"
+           },
+           ".amazonaws.com"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Azure DevOps git repository archiver",
+    "EnableKeyRotation": true,
+    "KeySpec": "SYMMETRIC_DEFAULT",
+    "KeyUsage": "ENCRYPT_DECRYPT",
+    "PendingWindowInDays": 7
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "archiverloggroup7C048019": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "KmsKeyId": {
+     "Fn::GetAtt": [
+      "archiverloggroupKey7BCF083C",
+      "Arn"
+     ]
+    },
+    "RetentionInDays": 30
+   },
+   "DependsOn": [
+    "archiverloggroupKey7BCF083C"
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "archivernotifications2E31B1D9": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "DisplayName": "archiver-notifications",
+    "KmsMasterKeyId": {
+     "Fn::GetAtt": [
+      "archiverloggroupKey7BCF083C",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "archiverdestination9B9DDE6E": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
+    "LifecycleConfiguration": {
+     "Rules": [
+      {
+       "ExpirationInDays": 360,
+       "NoncurrentVersionTransitions": [
+        {
+         "StorageClass": "STANDARD_IA",
+         "TransitionInDays": 30
+        },
+        {
+         "StorageClass": "GLACIER",
+         "TransitionInDays": 90
+        },
+        {
+         "StorageClass": "DEEP_ARCHIVE",
+         "TransitionInDays": 180
+        }
+       ],
+       "Status": "Enabled",
+       "Transitions": [
+        {
+         "StorageClass": "STANDARD_IA",
+         "TransitionInDays": 30
+        },
+        {
+         "StorageClass": "GLACIER",
+         "TransitionInDays": 90
+        },
+        {
+         "StorageClass": "DEEP_ARCHIVE",
+         "TransitionInDays": 180
+        }
+       ]
+      }
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    },
+    "VersioningConfiguration": {
+     "Status": "Enabled"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "archiverdestinationPolicyC948AFFF": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "archiverdestination9B9DDE6E"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:*",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "archiverdestination9B9DDE6E",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "archiverdestination9B9DDE6E",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "archivers3bucketarn4FD82B78": {
+   "Description": "ARN of the S3 bucket storing the repositories.",
+   "Value": {
+    "Fn::GetAtt": [
+     "archiverdestination9B9DDE6E",
+     "Arn"
+    ]
+   }
+  },
+  "archiverloggrouparn20EFDA53": {
+   "Description": "ARN of the Cloudwatch Log group storing the code build logs.",
+   "Value": {
+    "Fn::GetAtt": [
+     "archiverloggroup7C048019",
+     "Arn"
+    ]
+   }
+  },
+  "archiverkmskey096108C8": {
+   "Description": "ARN of the KMS key used to encrypt the Cloudwatch logs and the SNS topic.",
+   "Value": {
+    "Fn::GetAtt": [
+     "archiverloggroupKey7BCF083C",
+     "Arn"
+    ]
+   }
+  },
+  "archiversnstopicarnDD9E4A24": {
+   "Description": "ARN of the SNS topic.",
+   "Value": {
+    "Ref": "archivernotifications2E31B1D9"
+   }
+  },
+  "ExportsOutputRefarchiverdestination9B9DDE6EBE1641C9": {
+   "Value": {
+    "Ref": "archiverdestination9B9DDE6E"
+   },
+   "Export": {
+    "Name": "empty-backup-configuration:ExportsOutputRefarchiverdestination9B9DDE6EBE1641C9"
+   }
+  },
+  "ExportsOutputFnGetAttarchiverdestination9B9DDE6EArn0B50F630": {
+   "Value": {
+    "Fn::GetAtt": [
+     "archiverdestination9B9DDE6E",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "empty-backup-configuration:ExportsOutputFnGetAttarchiverdestination9B9DDE6EArn0B50F630"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

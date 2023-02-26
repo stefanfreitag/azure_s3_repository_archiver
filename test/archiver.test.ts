@@ -1,5 +1,6 @@
 import * as cdk from 'aws-cdk-lib/';
 import * as assertions from 'aws-cdk-lib/assertions';
+import { Schedule } from 'aws-cdk-lib/aws-events';
 import { CfnKey } from 'aws-cdk-lib/aws-kms';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import { CfnBucket, EventType } from 'aws-cdk-lib/aws-s3';
@@ -323,7 +324,7 @@ describe('Logging settings', () => {
   });
 });
 
-describe('Cloudwatch rules', () => {
+describe('Default Cloudwatch rule setup', () => {
 
 
   let stack: cdk.Stack;
@@ -355,6 +356,15 @@ describe('Cloudwatch rules', () => {
   test('Expected number of rules created', () => {
     assertions.Template.fromStack(stack).resourceCountIs('AWS::Events::Rule', 2);
   });
+
+  test('Default schedule', () => {
+    backupConfigurations.forEach(() => {
+      assertions.Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+        ScheduleExpression: 'cron(0 0 ? * 1 *)',
+      });
+    });
+  });
+
   test('Description of rules', () => {
     backupConfigurations.forEach((configuration) => {
       assertions.Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -367,4 +377,44 @@ describe('Cloudwatch rules', () => {
       });
     });
   });
+});
+
+describe('Custom Cloudwatch rule setup', () => {
+
+
+  let stack: cdk.Stack;
+  const backupConfigurations = [
+    {
+      organizationName: 'organization-a',
+      projectName: 'project-b',
+      repositoryNames: ['repository-c'],
+      schedule: Schedule.expression('cron(0 0 ? * 2 *)'),
+      secretArn: 'secret-arn',
+    },
+    {
+      organizationName: 'organization-a',
+      projectName: 'project-d',
+      repositoryNames: ['repository-c'],
+      schedule: Schedule.expression('cron(0 0 ? * 2 *)'),
+      secretArn: 'secret-arn',
+    },
+  ];
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'stack', {});
+    new Archiver(stack, 'archiver', {
+      retentionDays: logs.RetentionDays.ONE_WEEK,
+      backupConfigurations,
+    });
+  });
+
+  test('Cusstom schedule', () => {
+    backupConfigurations.forEach(() => {
+      assertions.Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+        ScheduleExpression: 'cron(0 0 ? * 2 *)',
+      });
+    });
+  });
+
 });

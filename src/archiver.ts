@@ -19,10 +19,9 @@ import { ArchiverProperties } from './archiverProperties';
 import { BackupConfiguration } from './backupConfiguration';
 
 /**
- * Every week
+ * The default backup intervall for the git repositories is "every week".
  */
-const DEFAULT_CRON_EXPRESSION = 'cron(0 0 ? * 1 *)';
-
+const DEFAULT_SCHEDULE = events.Schedule.expression('cron(0 0 ? * 1 *)');
 export class Archiver extends Construct {
   props: ArchiverProperties;
 
@@ -218,7 +217,7 @@ export class Archiver extends Construct {
       'ScheduleRule-' + element.organizationName + '-' + element.projectName,
       {
         enabled: true,
-        schedule: events.Schedule.expression(DEFAULT_CRON_EXPRESSION),
+        schedule: element.schedule ? element.schedule : DEFAULT_SCHEDULE,
         targets: [new eventsTargets.CodeBuildProject(project)],
         description:
           'Trigger for backing up Azure DevOps git repositories of organization ' +

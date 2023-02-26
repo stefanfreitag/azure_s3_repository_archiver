@@ -25,4 +25,3 @@ tsconfig.tsbuildinfo
 .history/
 .venv
 .idea
-test/integ.*/

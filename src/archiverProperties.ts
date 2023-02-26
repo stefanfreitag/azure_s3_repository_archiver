@@ -7,7 +7,7 @@ import { BackupConfiguration } from './backupConfiguration';
 
 export interface ArchiverProperties {
   /**
-   * Number of days to keep the Cloudwatch logs.
+   * The number of days to keep the Cloudwatch logs.
    * @default RetentionDays.ONE_MONTH
    *
    * @type {RetentionDays}
