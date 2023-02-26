@@ -182,7 +182,7 @@ const archiverProperties: ArchiverProperties = { ... }
 | --- | --- | --- |
 | <code><a href="#azure-devops-repository-archiver.ArchiverProperties.property.backupConfigurations">backupConfigurations</a></code> | <code><a href="#azure-devops-repository-archiver.BackupConfiguration">BackupConfiguration</a>[]</code> | Contains details on the git repositories to be backed up. |
 | <code><a href="#azure-devops-repository-archiver.ArchiverProperties.property.notificationEvents">notificationEvents</a></code> | <code>aws-cdk-lib.aws_s3.EventType[]</code> | S3 events that will trigger a message to the SNS topic. |
-| <code><a href="#azure-devops-repository-archiver.ArchiverProperties.property.retentionDays">retentionDays</a></code> | <code>aws-cdk-lib.aws_logs.RetentionDays</code> | Number of days to keep the Cloudwatch logs. |
+| <code><a href="#azure-devops-repository-archiver.ArchiverProperties.property.retentionDays">retentionDays</a></code> | <code>aws-cdk-lib.aws_logs.RetentionDays</code> | The number of days to keep the Cloudwatch logs. |
 
 ---
 
@@ -222,11 +222,13 @@ public readonly retentionDays: RetentionDays;
 - *Type:* aws-cdk-lib.aws_logs.RetentionDays
 - *Default:* RetentionDays.ONE_MONTH
 
-Number of days to keep the Cloudwatch logs.
+The number of days to keep the Cloudwatch logs.
 
 ---
 
 ### BackupConfiguration <a name="BackupConfiguration" id="azure-devops-repository-archiver.BackupConfiguration"></a>
+
+A backup configuration defining - the repositories to backup, and   - the backup interval All repositories that are part of a backup configuration are belonging to the same Azure DevOps organization and project.
 
 #### Initializer <a name="Initializer" id="azure-devops-repository-archiver.BackupConfiguration.Initializer"></a>
 
@@ -244,6 +246,7 @@ const backupConfiguration: BackupConfiguration = { ... }
 | <code><a href="#azure-devops-repository-archiver.BackupConfiguration.property.projectName">projectName</a></code> | <code>string</code> | The name of the Azure DevOps project. |
 | <code><a href="#azure-devops-repository-archiver.BackupConfiguration.property.repositoryNames">repositoryNames</a></code> | <code>string[]</code> | The names of the git repositories to backup. |
 | <code><a href="#azure-devops-repository-archiver.BackupConfiguration.property.secretArn">secretArn</a></code> | <code>string</code> | ARN of the secret containing the token for accessing the git repositories of the Azure DevOps organization. |
+| <code><a href="#azure-devops-repository-archiver.BackupConfiguration.property.schedule">schedule</a></code> | <code>aws-cdk-lib.aws_events.Schedule</code> | The schedule allows to define the frequency of backups. |
 
 ---
 
@@ -292,6 +295,21 @@ public readonly secretArn: string;
 - *Type:* string
 
 ARN of the secret containing the token for accessing the git repositories of the Azure DevOps organization.
+
+---
+
+##### `schedule`<sup>Optional</sup> <a name="schedule" id="azure-devops-repository-archiver.BackupConfiguration.property.schedule"></a>
+
+```typescript
+public readonly schedule: Schedule;
+```
+
+- *Type:* aws-cdk-lib.aws_events.Schedule
+- *Default:* Schedule.expression('cron(0 0 ? * 1 *)')
+
+The schedule allows to define the frequency of backups.
+
+If not defined, a weekly backup is configured.
 
 ---
 

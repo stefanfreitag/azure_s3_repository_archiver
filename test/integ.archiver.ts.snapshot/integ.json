@@ -1,0 +1,15 @@
+{
+  "version": "29.0.0",
+  "testCases": {
+    "MyTestCase/DefaultTest": {
+      "stacks": [
+        "empty-backup-configuration"
+      ],
+      "regions": [
+        "eu-central-1"
+      ],
+      "assertionStack": "MyTestCase/DefaultTest/DeployAssert",
+      "assertionStackName": "MyTestCaseDefaultTestDeployAssertD814CC8D"
+    }
+  }
+}

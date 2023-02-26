@@ -30,7 +30,6 @@ In the S3 bucket the backups are placed in a "directory" structure like
 | ...
 ```
 
-
 ## Features
 
 The S3 bucket is configured as below
@@ -51,6 +50,9 @@ The CodeBuild projects are configured as below
 - Logging to CloudWatch
   - Configurable retention period. Default is one month.
   - Encryption using customer-managed KMS key
+- Schedule based execution.
+  - The default schedule is one week and can be overriden as part of the backup
+    configuration. 
 
 ## Prerequisites
 
@@ -71,7 +73,7 @@ aws secretsmanager create-secret --name repository_archiver --description "Secre
   ```javascript
   "dependencies": {
     [...],
-    "azure-devops-repository-archiver": "0.0.23",
+    "azure-devops-repository-archiver": "1.4.0",
   },
   ```
 
