@@ -24,6 +24,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
   keywords: ['aws', 'azure-devops', 'cdk', 'backup', 's3'],
   name: 'azure-devops-repository-archiver',
   majorVersion: 1,
+  minNodeVersion: '16.14.0',
   repositoryUrl: 'https://github.com/stefanfreitag/azure_s3_repository_archiver.git',
   stability: Stability.STABLE,
   publishToMaven: {
