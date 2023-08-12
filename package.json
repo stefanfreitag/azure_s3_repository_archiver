@@ -38,13 +38,13 @@
     "organization": false
   },
   "devDependencies": {
-    "@aws-cdk/integ-runner": "2.86.0-alpha.0",
-    "@aws-cdk/integ-tests-alpha": "2.86.0-alpha.0",
+    "@aws-cdk/integ-runner": "2.91.0-alpha.0",
+    "@aws-cdk/integ-tests-alpha": "2.91.0-alpha.0",
     "@types/jest": "^27",
     "@types/node": "^16",
     "@typescript-eslint/eslint-plugin": "^5",
     "@typescript-eslint/parser": "^5",
-    "aws-cdk-lib": "2.86.0",
+    "aws-cdk-lib": "2.91.0",
     "constructs": "10.0.5",
     "eslint": "^8",
     "eslint-import-resolver-node": "^0.3.7",
@@ -56,7 +56,6 @@
     "jsii-diff": "^1.85.0",
     "jsii-docgen": "^7.2.9",
     "jsii-pacmak": "^1.85.0",
-    "jsii-rosetta": "1.x",
     "npm-check-updates": "^16",
     "projen": "^0.71.158",
     "standard-version": "^9",
@@ -65,7 +64,7 @@
     "typescript": "^4.9.5"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "^2.86.0",
+    "aws-cdk-lib": "^2.91.0",
     "constructs": "^10.0.5"
   },
   "resolutions": {
