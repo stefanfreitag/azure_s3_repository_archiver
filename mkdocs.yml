@@ -7,6 +7,8 @@ repo_url: 'https://github.com/stefanfreitag/azure_s3_repository_archiver'
 edit_uri: blob/main/docs/
 nav:
     - Home: index.md
+    - Features: features.md
+    - Links: links.md
 theme:
   name: 'material'
   palette:
