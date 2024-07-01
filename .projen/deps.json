@@ -2,12 +2,12 @@
   "dependencies": [
     {
       "name": "@aws-cdk/integ-runner",
-      "version": "2.117.0-alpha.0",
+      "version": "2.147.0-alpha.0",
       "type": "build"
     },
     {
       "name": "@aws-cdk/integ-tests-alpha",
-      "version": "2.117.0-alpha.0",
+      "version": "2.147.0-alpha.0",
       "type": "build"
     },
     {
@@ -17,17 +17,17 @@
     },
     {
       "name": "@types/node",
-      "version": "^16 <= 16.18.78",
+      "version": "^18 <= 18.11.19",
       "type": "build"
     },
     {
       "name": "@typescript-eslint/eslint-plugin",
-      "version": "^6",
+      "version": "^7",
       "type": "build"
     },
     {
       "name": "@typescript-eslint/parser",
-      "version": "^6",
+      "version": "^7",
       "type": "build"
     },
     {
@@ -109,7 +109,7 @@
     },
     {
       "name": "aws-cdk-lib",
-      "version": "^2.117.0",
+      "version": "^2.147.0",
       "type": "peer"
     },
     {
