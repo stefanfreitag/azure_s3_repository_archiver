@@ -38,8 +38,8 @@
     "organization": false
   },
   "devDependencies": {
-    "@aws-cdk/integ-runner": "2.147.0-alpha.0",
-    "@aws-cdk/integ-tests-alpha": "2.147.0-alpha.0",
+    "@aws-cdk/integ-runner": "2.160.0-alpha.0",
+    "@aws-cdk/integ-tests-alpha": "2.160.0-alpha.0",
     "@types/jest": "^27",
     "@types/node": "^18 <= 18.11.19",
     "@typescript-eslint/eslint-plugin": "^7",
