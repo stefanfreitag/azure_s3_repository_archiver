@@ -10,7 +10,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
     twitter: 'stefanfreitag',
     announce: false,
   },
-  cdkVersion: '2.147.0',
+  cdkVersion: '2.160.0',
   description: 'Archive Azure DevOps git repositories to AWS S3',
   codeCov: true,
   defaultReleaseBranch: 'main',
