@@ -228,7 +228,7 @@ The number of days to keep the Cloudwatch logs.
 
 ### BackupConfiguration <a name="BackupConfiguration" id="azure-devops-repository-archiver.BackupConfiguration"></a>
 
-A backup configuration defining - the repositories to backup, and   - the backup interval All repositories that are part of a backup configuration are belonging to the same Azure DevOps organization and project.
+A backup configuration defining - the repositories to backup, and  - the backup interval All repositories that are part of a backup configuration are belonging to the same Azure DevOps organization and project.
 
 #### Initializer <a name="Initializer" id="azure-devops-repository-archiver.BackupConfiguration.Initializer"></a>
 
