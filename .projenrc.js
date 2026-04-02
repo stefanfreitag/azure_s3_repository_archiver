@@ -10,7 +10,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
     twitter: 'stefanfreitag',
     announce: false,
   },
-  cdkVersion: '2.233.0',
+  cdkVersion: '2.247.0',
   description: 'Archive Azure DevOps git repositories to AWS S3',
   codeCov: true,
   defaultReleaseBranch: 'main',
@@ -20,7 +20,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
     },
   },
   devContainer: true,
-  devDeps: ['@aws-cdk/integ-tests-alpha@2.233.0-alpha.0', '@aws-cdk/integ-runner@2.193.2', 'ts-node'],
+  devDeps: ['@aws-cdk/integ-tests-alpha@2.247.0-alpha.0', '@aws-cdk/integ-runner@2.197.11', 'ts-node'],
   keywords: ['aws', 'azure-devops', 'cdk', 'backup', 's3'],
   name: 'azure-devops-repository-archiver',
   majorVersion: 1,
@@ -28,6 +28,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
   stability: Stability.STABLE,
   npmjsProvenance: true,
   npmTrustedPublishing: true,
+  packageManager: 'yarn2',
   publishToMaven: {
     javaPackage: 'io.github.stefanfreitag.cdk.azures3repositoryarchiver',
     mavenArtifactId: 'azureS3RepositoryArchiver',
@@ -42,6 +43,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
     distName: 'azure-devops-repository-archiver',
     trustedPublishing: true,
   },
+  mergify: false,
 });
 
 project.devContainer.name='cdk-dev-environment';

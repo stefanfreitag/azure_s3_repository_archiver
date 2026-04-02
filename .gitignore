@@ -5,6 +5,14 @@
 !/.projen/files.json
 !/.github/workflows/pull-request-lint.yml
 !/.devcontainer.json
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
+!/.yarnrc.yml
 !/package.json
 !/LICENSE
 !/.npmignore
@@ -40,7 +48,6 @@ junit.xml
 !/.github/workflows/release.yml
 codecov
 codecov.*
-!/.mergify.yml
 !/.github/workflows/upgrade-main.yml
 !/.github/pull_request_template.md
 !/test/
